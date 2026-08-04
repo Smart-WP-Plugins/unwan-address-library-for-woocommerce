@@ -1,0 +1,39 @@
+# AI assistant configuration and session files
+.claude/**
+CLAUDE.md
+
+# Version control and local tooling
+.*/**
+.gitignore
+.distignore
+.editorconfig
+
+# Dependencies, tests, and build configuration
+# (src/** ships in the release zip, unminified, as the human-readable
+# source for the compiled build/**/*.js bundles — required by the
+# WordPress.org Plugin Directory guidelines.)
+scripts/**
+node_modules/**
+vendor/**
+tests/**
+coverage/**
+composer.json
+composer.lock
+package.json
+package-lock.json
+webpack.config.js
+
+# Internal documentation
+*.md
+
+# Generated and machine-local files
+*.zip
+*.tgz
+*.log
+**/.DS_Store
+**/Thumbs.db
+.env
+.env.*
+.eslintcache
+.stylelintcache
+.phpunit.result.cache

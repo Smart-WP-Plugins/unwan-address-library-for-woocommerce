@@ -1,0 +1,37 @@
+{
+	"name": "unwan-for-woocommerce/unwan-for-woocommerce",
+	"description": "Unwan address management for WooCommerce classic and block checkout.",
+	"type": "wordpress-plugin",
+	"license": "GPL-2.0-or-later",
+	"homepage": "https://smartwpplugins.com/",
+	"authors": [
+		{
+			"name": "SmartWP Plugins",
+			"homepage": "https://smartwpplugins.com/"
+		}
+	],
+	"require": {
+		"php": ">=7.4"
+	},
+	"require-dev": {
+		"dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+		"phpcompatibility/phpcompatibility-wp": "^2.1",
+		"wp-coding-standards/wpcs": "^3.1"
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		},
+		"optimize-autoloader": true,
+		"sort-packages": true
+	},
+	"autoload": {
+		"psr-4": {
+			"Unwan\\AddressLibrary\\": "includes/"
+		}
+	},
+	"scripts": {
+		"lint:php": "phpcs",
+		"lint:php-fix": "phpcbf"
+	}
+}

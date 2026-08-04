@@ -1,0 +1,900 @@
+/* Unwan frontend interface. */
+/* stylelint-disable no-descending-specificity */
+
+:root {
+	--unwan-color-text: #243247;
+	--unwan-color-muted: #64748b;
+	--unwan-color-subtle: #8793a5;
+	--unwan-color-border: #dbe1e8;
+	--unwan-color-border-strong: #a9b6c5;
+	--unwan-color-surface: #fff;
+	--unwan-color-surface-muted: #f7f8fa;
+	--unwan-color-selected: #f4f7fa;
+	--unwan-color-accent: #6b3fa0;
+	--unwan-color-accent-rgb: 107, 63, 160;
+	--unwan-color-on-accent: #fff;
+	--unwan-color-danger: #b4232f;
+	--unwan-color-warning: #9a6700;
+	--unwan-color-warning-surface: #fff8e8;
+	--unwan-font-family: -apple-system, blinkmacsystemfont, "Segoe UI", roboto, oxygen-sans, ubuntu, cantarell, "Helvetica Neue", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+	--unwan-font-size-small: 0.75rem;
+	--unwan-font-size-body: 0.875rem;
+	--unwan-font-size-address: 1rem;
+	--unwan-font-weight-medium: 600;
+	--unwan-font-weight-bold: 700;
+	--unwan-line-height: 1.45;
+	--unwan-radius: 6px;
+	--unwan-shadow: 0 6px 20px rgb(36 50 71 / 6%);
+	--unwan-focus-ring: 0 0 0 2px rgb(36 50 71 / 20%);
+	--unwan-picker-list-height: 320px;
+}
+
+.unwan-color-scheme-dark {
+	--unwan-color-text: #f1f5f9;
+	--unwan-color-muted: #cbd5e1;
+	--unwan-color-subtle: #94a3b8;
+	--unwan-color-border: #334155;
+	--unwan-color-border-strong: #64748b;
+	--unwan-color-surface: #111827;
+	--unwan-color-surface-muted: #1f2937;
+	--unwan-color-selected: rgba(var(--unwan-color-accent-rgb), 0.16);
+	--unwan-color-danger: #fda4af;
+	--unwan-color-warning: #fbbf24;
+	--unwan-color-warning-surface: #422006;
+	--unwan-shadow: 0 6px 20px rgb(0 0 0 / 24%);
+	--unwan-focus-ring: 0 0 0 2px rgba(var(--unwan-color-accent-rgb), 0.35);
+}
+
+@media (prefers-color-scheme: dark) {
+
+	.unwan-color-scheme-system {
+		--unwan-color-text: #f1f5f9;
+		--unwan-color-muted: #cbd5e1;
+		--unwan-color-subtle: #94a3b8;
+		--unwan-color-border: #334155;
+		--unwan-color-border-strong: #64748b;
+		--unwan-color-surface: #111827;
+		--unwan-color-surface-muted: #1f2937;
+		--unwan-color-selected: rgba(var(--unwan-color-accent-rgb), 0.16);
+		--unwan-color-danger: #fda4af;
+		--unwan-color-warning: #fbbf24;
+		--unwan-color-warning-surface: #422006;
+		--unwan-shadow: 0 6px 20px rgb(0 0 0 / 24%);
+		--unwan-focus-ring: 0 0 0 2px rgba(var(--unwan-color-accent-rgb), 0.35);
+	}
+}
+
+/*
+ * Scoped reset
+ *
+ * Checkout themes frequently style every button and input. Unwan uses
+ * ordinary HTML elements, so reset their presentation inside the picker before
+ * applying the component rules below.
+ */
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list),
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) *,
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) *::before,
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) *::after {
+	box-sizing: border-box;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) {
+	display: block;
+	width: 100%;
+	min-width: 0;
+	max-width: 100%;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: var(--unwan-color-text);
+	font-family: var(--unwan-font-family);
+	font-size: var(--unwan-font-size-body);
+	font-style: normal;
+	font-weight: 400;
+	letter-spacing: normal;
+	line-height: var(--unwan-line-height);
+	text-align: start;
+	text-decoration: none;
+	text-transform: none;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) :where(div, span, article, form, strong) {
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	letter-spacing: inherit;
+	line-height: inherit;
+	text-align: inherit;
+	text-decoration: none;
+	text-transform: none;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) button,
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) input {
+	min-width: 0;
+	max-width: none;
+	height: auto;
+	margin: 0;
+	border: 0;
+	border-radius: 0;
+	appearance: none;
+	background: transparent;
+	box-shadow: none;
+	color: inherit;
+	font: inherit;
+	letter-spacing: inherit;
+	line-height: inherit;
+	text-align: inherit;
+	text-decoration: none;
+	text-indent: 0;
+	text-shadow: none;
+	text-transform: none;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) button {
+	display: block;
+	width: auto;
+	padding: 0;
+	cursor: pointer;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) button:disabled {
+	cursor: not-allowed;
+	opacity: 0.68;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list)[aria-busy="true"] {
+	pointer-events: none;
+	opacity: 0.72;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) [hidden] {
+	display: none !important;
+}
+
+/* Checkout picker */
+:is(#unwan-billing-picker, #unwan-shipping-picker).unwan-picker .unwan-picker__summary {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 24px;
+	padding: 18px 20px;
+	border: 1px solid var(--unwan-color-border);
+	border-radius: var(--unwan-radius);
+	background: var(--unwan-color-surface);
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker).unwan-picker .unwan-picker__summary-copy {
+	display: flex;
+	min-width: 0;
+	flex: 1;
+	flex-direction: column;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker).unwan-picker .unwan-picker__eyebrow,
+:is(#unwan-billing-picker, #unwan-shipping-picker).unwan-picker .unwan-picker__panel-title {
+	color: var(--unwan-color-muted);
+	font-size: var(--unwan-font-size-small);
+	font-weight: var(--unwan-font-weight-bold);
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker).unwan-picker .unwan-picker__summary-street {
+	display: block;
+	overflow: hidden;
+	margin-top: 4px;
+	color: var(--unwan-color-text);
+	font-size: var(--unwan-font-size-address);
+	font-weight: var(--unwan-font-weight-bold);
+	line-height: 1.35;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker).unwan-picker .unwan-picker__summary-details {
+	display: block;
+	overflow: hidden;
+	margin-top: 2px;
+	color: var(--unwan-color-muted);
+	font-size: var(--unwan-font-size-body);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker).unwan-picker button.unwan-picker__change {
+	flex: 0 0 auto;
+	margin-top: 20px;
+	color: var(--unwan-color-text);
+	font-weight: var(--unwan-font-weight-medium);
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker).unwan-picker button.unwan-picker__change:hover {
+	color: var(--unwan-color-text);
+}
+
+/* Shared address-list primitives: checkout and My Account. */
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list).unwan-address-list,
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) .unwan-address-list {
+	position: relative;
+	overflow: visible;
+	border: 1px solid var(--unwan-color-border);
+	border-radius: var(--unwan-radius);
+	background: var(--unwan-color-surface);
+	color: var(--unwan-color-text);
+	font-family: var(--unwan-font-family);
+	font-size: var(--unwan-font-size-body);
+	line-height: var(--unwan-line-height);
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) .unwan-address-list__header {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 12px 16px;
+	border-bottom: 1px solid var(--unwan-color-border);
+	border-start-start-radius: var(--unwan-radius);
+	border-start-end-radius: var(--unwan-radius);
+	background: var(--unwan-color-surface-muted);
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) .unwan-address-list__header > :first-child {
+	color: var(--unwan-color-muted);
+	font-size: var(--unwan-font-size-small);
+	font-weight: var(--unwan-font-weight-bold);
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) .unwan-address-list__count {
+	color: var(--unwan-color-muted);
+	font-size: var(--unwan-font-size-small);
+	text-align: end;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) .unwan-address-search {
+	position: relative;
+	display: block;
+	padding: 12px 16px;
+	border-bottom: 1px solid var(--unwan-color-border);
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) .unwan-address-search::before {
+	position: absolute;
+	z-index: 1;
+	inset-block-start: 50%;
+	inset-inline-start: 30px;
+	width: 14px;
+	height: 14px;
+	border: 2px solid var(--unwan-color-subtle);
+	border-radius: 50%;
+	content: "";
+	pointer-events: none;
+	transform: translateY(-58%);
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) .unwan-address-search::after {
+	position: absolute;
+	z-index: 1;
+	inset-block-start: calc(50% + 5px);
+	inset-inline-start: 43px;
+	width: 7px;
+	height: 2px;
+	background: var(--unwan-color-subtle);
+	content: "";
+	pointer-events: none;
+	transform: rotate(45deg);
+	transform-origin: left center;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) input.unwan-address-search__input {
+	display: block;
+	width: 100%;
+	min-height: 44px;
+	padding: 9px 12px 9px 42px;
+	border: 1px solid var(--unwan-color-border-strong);
+	border-radius: var(--unwan-radius);
+	background: var(--unwan-color-surface);
+	color: var(--unwan-color-text);
+	font-size: var(--unwan-font-size-body);
+	line-height: 1.3;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) input.unwan-address-search__input::placeholder {
+	color: var(--unwan-color-subtle);
+	opacity: 1;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) input.unwan-address-search__input:focus-visible,
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) button:focus-visible,
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) a:focus-visible {
+	border-color: var(--unwan-color-text);
+	box-shadow: var(--unwan-focus-ring);
+	outline: 2px solid transparent;
+	outline-offset: 2px;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) .unwan-address-list__saved--scrollable {
+	max-height: var(--unwan-picker-list-height);
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	scrollbar-color: var(--unwan-color-border-strong) transparent;
+	scrollbar-width: thin;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) .unwan-address-item {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	width: 100%;
+	padding: 12px 16px;
+	border: 0;
+	background: var(--unwan-color-surface);
+	color: var(--unwan-color-text);
+	text-align: start;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) .unwan-address-item + .unwan-address-item,
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) .unwan-address-item--new,
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) .unwan-picker__more,
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) .unwan-address-list__empty {
+	border-top: 1px solid var(--unwan-color-border);
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) .unwan-address-list__items > .unwan-address-item:last-of-type,
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) .unwan-address-list__items > .unwan-address-list__empty:last-child {
+	border-end-start-radius: var(--unwan-radius);
+	border-end-end-radius: var(--unwan-radius);
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) .unwan-address-item:not(.unwan-address-item--selected):hover {
+	background: rgba(var(--unwan-color-accent-rgb), 0.05);
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker) button.unwan-address-item--selected {
+	z-index: 1;
+	background: var(--unwan-color-selected);
+	box-shadow: inset 0 0 0 2px var(--unwan-color-text);
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker) .unwan-address-item__control {
+	position: relative;
+	display: grid;
+	width: 20px;
+	height: 20px;
+	flex: 0 0 20px;
+	border: 1px solid var(--unwan-color-border-strong);
+	border-radius: 50%;
+	background: var(--unwan-color-surface);
+	place-content: center;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker) .unwan-address-item__control::before {
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: var(--unwan-color-text);
+	content: "";
+	transform: scale(0);
+	transition: transform 160ms ease;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker) .unwan-address-item[aria-checked="true"] .unwan-address-item__control {
+	border-color: var(--unwan-color-text);
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker) .unwan-address-item[aria-checked="true"] .unwan-address-item__control::before {
+	transform: scale(1);
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) .unwan-address-item__content {
+	display: block;
+	min-width: 0;
+	flex: 1;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) .unwan-address-item__street {
+	display: block;
+	overflow: hidden;
+	color: var(--unwan-color-text);
+	font-size: var(--unwan-font-size-address);
+	font-weight: var(--unwan-font-weight-bold);
+	line-height: 1.35;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) .unwan-address-item__details {
+	display: block;
+	overflow: hidden;
+	margin-top: 3px;
+	color: var(--unwan-color-muted);
+	font-size: var(--unwan-font-size-body);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) .unwan-address-item__meta {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	flex: 0 0 auto;
+	gap: 6px;
+	margin-inline-start: auto;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) .unwan-address-item__labels {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	flex-wrap: wrap;
+	gap: 4px;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) .unwan-address-label {
+	display: inline-flex;
+	flex: 0 0 auto;
+	padding: 2px 7px;
+	border-radius: 2px;
+	background: rgba(var(--unwan-color-accent-rgb), 0.1);
+	color: var(--unwan-color-accent);
+	font-size: 0.625rem;
+	font-weight: var(--unwan-font-weight-bold);
+	letter-spacing: 0.07em;
+	line-height: 1.25;
+	text-align: end;
+	text-transform: uppercase;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker).unwan-picker button.unwan-picker__more {
+	width: 100%;
+	min-height: 48px;
+	padding: 11px 20px;
+	background: var(--unwan-color-surface);
+	color: var(--unwan-color-subtle);
+	text-align: start;
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker).unwan-picker button.unwan-picker__more:hover {
+	background: var(--unwan-color-surface-muted);
+	color: var(--unwan-color-text);
+}
+
+:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) .unwan-address-list__empty {
+	padding: 22px 20px;
+	color: var(--unwan-color-subtle);
+	text-align: center;
+}
+
+/* My Account */
+.unwan-account {
+	color: var(--unwan-color-text);
+	font-size: var(--unwan-font-size-body);
+	line-height: var(--unwan-line-height);
+}
+
+.unwan-account *,
+.unwan-editor * {
+	box-sizing: border-box;
+}
+
+.unwan-account__header,
+.unwan-editor__header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 24px;
+	margin-bottom: 26px;
+}
+
+.unwan-account__header h2,
+.unwan-editor__header h2 {
+	margin: 0 0 8px;
+	color: var(--unwan-color-text);
+	font-size: clamp(1.55rem, 2vw, 2rem);
+	font-weight: var(--unwan-font-weight-bold);
+	line-height: 1.2;
+}
+
+.unwan-account__header p {
+	max-width: 650px;
+	margin: 0;
+	color: var(--unwan-color-muted);
+}
+
+.unwan-account .unwan-button--primary,
+.unwan-editor .unwan-button--primary,
+.unwan-account .unwan-button--primary:hover,
+.unwan-editor .unwan-button--primary:hover,
+.unwan-account .unwan-button--primary:focus,
+.unwan-editor .unwan-button--primary:focus {
+	border-color: var(--unwan-color-text);
+	background: var(--unwan-color-text);
+	color: var(--unwan-color-surface);
+}
+
+.unwan-account .unwan-button--primary:hover,
+.unwan-account .unwan-button--primary:focus,
+.unwan-editor .unwan-button--primary:hover,
+.unwan-editor .unwan-button--primary:focus {
+	border-color: var(--unwan-color-muted);
+	background: var(--unwan-color-muted);
+}
+
+#unwan-account-ui .unwan-button--accent,
+#unwan-account-ui .unwan-button--accent:visited {
+	flex: 0 0 auto;
+	border-color: var(--unwan-color-accent);
+	background: var(--unwan-color-accent);
+	color: var(--unwan-color-on-accent);
+	white-space: nowrap;
+}
+
+#unwan-account-ui .unwan-button--accent:hover,
+#unwan-account-ui .unwan-button--accent:focus-visible {
+	border-color: color-mix(in srgb, var(--unwan-color-accent) 88%, #000);
+	background: color-mix(in srgb, var(--unwan-color-accent) 88%, #000);
+	box-shadow: 0 0 0 2px rgba(var(--unwan-color-accent-rgb), 0.25);
+	color: var(--unwan-color-on-accent);
+}
+
+#unwan-account-ui .unwan-button--accent:active {
+	border-color: color-mix(in srgb, var(--unwan-color-accent) 78%, #000);
+	background: color-mix(in srgb, var(--unwan-color-accent) 78%, #000);
+	color: var(--unwan-color-on-accent);
+}
+
+#unwan-account-ui a:not(.unwan-button--accent),
+#unwan-account-ui a:not(.unwan-button--accent):hover,
+#unwan-account-ui a:not(.unwan-button--accent):focus-visible {
+	color: var(--unwan-color-text);
+}
+
+.unwan-defaults {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 12px;
+	margin-bottom: 20px;
+}
+
+.unwan-default-card {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 16px;
+	min-width: 0;
+	padding: 16px;
+	border: 1px solid var(--unwan-color-border);
+	border-radius: var(--unwan-radius);
+	background: var(--unwan-color-surface);
+	box-shadow: var(--unwan-shadow);
+}
+
+.unwan-default-card__copy {
+	display: flex;
+	min-width: 0;
+	flex: 1;
+	flex-direction: column;
+}
+
+.unwan-default-card__label,
+.unwan-role-selector__legend {
+	color: var(--unwan-color-muted);
+	font-size: var(--unwan-font-size-small);
+	font-weight: var(--unwan-font-weight-bold);
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.unwan-default-card__street {
+	display: block;
+	overflow: hidden;
+	margin-top: 4px;
+	color: var(--unwan-color-text);
+	font-size: var(--unwan-font-size-address);
+	font-weight: var(--unwan-font-weight-bold);
+	line-height: 1.2;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.unwan-default-card__details {
+	display: block;
+	overflow: hidden;
+	margin-top: 4px;
+	color: var(--unwan-color-muted);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.unwan-default-card__change {
+	flex: 0 0 auto;
+	color: var(--unwan-color-text);
+	font-weight: var(--unwan-font-weight-medium);
+	text-underline-offset: 4px;
+}
+
+#unwan-account-list .unwan-address-item__menu {
+	position: relative;
+	flex: 0 0 auto;
+}
+
+#unwan-account-list button.unwan-address-item__menu-toggle {
+	display: grid;
+	width: 30px;
+	height: 30px;
+	padding: 0;
+	border: 1px solid transparent;
+	border-radius: var(--unwan-radius);
+	color: var(--unwan-color-muted);
+	font-size: var(--unwan-font-size-body);
+	font-weight: var(--unwan-font-weight-bold);
+	letter-spacing: 1px;
+	line-height: 1;
+	place-content: center;
+}
+
+#unwan-account-list button.unwan-address-item__menu-toggle:hover,
+#unwan-account-list button.unwan-address-item__menu-toggle[aria-expanded="true"] {
+	border-color: var(--unwan-color-border);
+	background: var(--unwan-color-surface-muted);
+	color: var(--unwan-color-text);
+}
+
+#unwan-account-list .unwan-address-item__menu-panel {
+	position: absolute;
+	z-index: 20;
+	inset-block-start: calc(100% + 4px);
+	inset-inline-end: 0;
+	width: max-content;
+	min-width: 190px;
+	overflow: hidden;
+	border: 1px solid var(--unwan-color-border);
+	border-radius: var(--unwan-radius);
+	background: var(--unwan-color-surface);
+	box-shadow: var(--unwan-shadow);
+}
+
+#unwan-account-list .unwan-address-item__menu-form {
+	margin: 0;
+}
+
+#unwan-account-list .unwan-address-item__menu-action {
+	display: block;
+	width: 100%;
+	margin: 0;
+	padding: 9px 12px;
+	border: 0;
+	border-radius: 0;
+	background: var(--unwan-color-surface);
+	box-shadow: none;
+	color: var(--unwan-color-text);
+	font-family: var(--unwan-font-family);
+	font-size: var(--unwan-font-size-body);
+	font-style: normal;
+	font-weight: 400;
+	letter-spacing: normal;
+	line-height: var(--unwan-line-height);
+	text-align: start;
+	text-decoration: none;
+	text-transform: none;
+	white-space: nowrap;
+}
+
+#unwan-account-list .unwan-address-item__menu-action:hover,
+#unwan-account-list .unwan-address-item__menu-action:focus-visible {
+	background: rgba(var(--unwan-color-accent-rgb), 0.05);
+	color: var(--unwan-color-text);
+}
+
+#unwan-account-list .unwan-address-item__menu-action:disabled {
+	color: var(--unwan-color-subtle);
+	cursor: not-allowed;
+	opacity: 0.65;
+}
+
+#unwan-account-list .unwan-address-item__menu-action--danger {
+	color: var(--unwan-color-danger);
+}
+
+.unwan-empty-state {
+	padding: 32px;
+	background: var(--unwan-color-surface-muted);
+	text-align: center;
+}
+
+.unwan-empty-state h3 {
+	margin: 0 0 8px;
+	font-size: var(--unwan-font-size-address);
+}
+
+.unwan-empty-state p {
+	margin: 0 auto 18px;
+	color: var(--unwan-color-muted);
+}
+
+.unwan-account__limit-note {
+	margin-top: 18px;
+	padding: 12px 16px;
+	border-left: 3px solid var(--unwan-color-warning);
+	background: var(--unwan-color-warning-surface);
+	color: var(--unwan-color-muted);
+}
+
+.unwan-editor {
+	width: 100%;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	box-shadow: none;
+}
+
+.unwan-editor__header {
+	padding-bottom: 18px;
+	border-bottom: 1px solid var(--unwan-color-border);
+}
+
+.unwan-editor__header a {
+	white-space: nowrap;
+}
+
+.unwan-address-form {
+	max-width: 760px;
+}
+
+.unwan-address-form .form-row {
+	margin-bottom: 16px;
+}
+
+.unwan-address-form input.input-text,
+.unwan-address-form input[type="text"],
+.unwan-address-form input[type="tel"],
+.unwan-address-form select {
+	min-height: 46px;
+	border: 1px solid var(--unwan-color-border-strong);
+	border-radius: var(--unwan-radius);
+	background-color: var(--unwan-color-surface);
+	color: var(--unwan-color-text);
+}
+
+.unwan-address-form input:focus,
+.unwan-address-form select:focus {
+	border-color: var(--unwan-color-text);
+	box-shadow: var(--unwan-focus-ring);
+	outline: 0;
+}
+
+.unwan-role-selector {
+	display: grid;
+	gap: 8px;
+	margin: 24px 0 0;
+	padding: 20px 0 0;
+	border: 0;
+	border-top: 1px solid var(--unwan-color-border);
+}
+
+.unwan-role-selector__legend {
+	padding: 0;
+}
+
+.unwan-role-selector__option {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0;
+	color: var(--unwan-color-text);
+	font-weight: var(--unwan-font-weight-medium);
+}
+
+.unwan-role-selector__option input {
+	margin: 0;
+}
+
+.unwan-role-selector__help {
+	margin: 4px 0 0;
+	color: var(--unwan-color-muted);
+	font-size: var(--unwan-font-size-small);
+}
+
+.unwan-editor__actions {
+	display: flex;
+	gap: 10px;
+	margin-top: 24px;
+	padding-top: 20px;
+	border-top: 1px solid var(--unwan-color-border);
+}
+
+/* Checkout placement and native-field visibility */
+.wp-block-woocommerce-checkout-shipping-address-block,
+.wp-block-woocommerce-checkout-billing-address-block {
+	width: 100%;
+	min-width: 0;
+	max-width: 100%;
+}
+
+.wp-block-woocommerce-checkout-shipping-address-block > .wc-block-components-checkout-step__content,
+.wp-block-woocommerce-checkout-billing-address-block > .wc-block-components-checkout-step__content {
+	display: flex;
+	flex-direction: column;
+}
+
+.wp-block-woocommerce-checkout-shipping-address-block > .wc-block-components-checkout-step__content > .wc-block-components-notices,
+.wp-block-woocommerce-checkout-shipping-address-block > .wc-block-components-checkout-step__content > .wc-block-components-notices__snackbar,
+.wp-block-woocommerce-checkout-billing-address-block > .wc-block-components-checkout-step__content > .wc-block-components-notices,
+.wp-block-woocommerce-checkout-billing-address-block > .wc-block-components-checkout-step__content > .wc-block-components-notices__snackbar {
+	order: -2;
+}
+
+.wp-block-woocommerce-checkout-shipping-address-block > .wc-block-components-checkout-step__content > #unwan-shipping-picker.unwan-picker,
+.wp-block-woocommerce-checkout-billing-address-block > .wc-block-components-checkout-step__content > #unwan-billing-picker.unwan-picker {
+	order: -1;
+	margin-bottom: 24px;
+}
+
+.unwan-checkout-step--fields-hidden > .wc-block-components-checkout-step__content > .wc-block-components-address-address-wrapper {
+	display: none;
+}
+
+.unwan-checkout__selector {
+	margin: 0 0 24px;
+}
+
+.unwan-checkout__selection-field {
+	display: none !important;
+}
+
+.unwan-block-editor-preview {
+	padding: 0;
+	border: 0;
+	background: transparent;
+}
+
+.unwan-block-editor-preview__description {
+	margin: 5px 0 0;
+}
+
+@media (max-width: 760px) {
+
+	:is(#unwan-billing-picker, #unwan-shipping-picker).unwan-picker .unwan-picker__summary {
+		gap: 16px;
+		padding: 16px;
+	}
+
+	.unwan-account__header,
+	.unwan-editor__header {
+		flex-direction: column;
+		gap: 14px;
+	}
+
+	.unwan-defaults {
+		grid-template-columns: 1fr;
+	}
+
+	:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) .unwan-address-item {
+		gap: 12px;
+	}
+
+	:is(#unwan-billing-picker, #unwan-shipping-picker, #unwan-account-list) .unwan-address-item__meta {
+		align-self: flex-start;
+	}
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	:is(#unwan-billing-picker, #unwan-shipping-picker) *,
+	.unwan-account * {
+		scroll-behavior: auto !important;
+		transition: none !important;
+	}
+}

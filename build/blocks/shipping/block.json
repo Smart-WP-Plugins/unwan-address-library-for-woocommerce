@@ -1,0 +1,29 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "unwan/shipping-selector",
+  "version": "1.0.0",
+  "title": "Shipping Address Book",
+  "category": "woocommerce",
+  "icon": "location-alt",
+  "description": "Lets signed-in customers choose a saved shipping address.",
+  "supports": {
+    "html": false,
+    "multiple": false,
+    "inserter": false,
+    "reusable": false
+  },
+  "parent": [
+    "woocommerce/checkout-shipping-address-block"
+  ],
+  "attributes": {
+    "lock": {
+      "type": "object",
+      "default": {
+        "remove": true,
+        "move": true
+      }
+    }
+  },
+  "textdomain": "unwan-for-woocommerce"
+}
