@@ -21,6 +21,8 @@ Most WooCommerce stores make customers manage two separate address lists — a b
 
 Unwan ships this feature set complete, with no artificial limits, no "Pro" upsell, and no locked settings.
 
+The full source, including the unminified JavaScript behind every compiled `build/` file, is maintained publicly on GitHub at [Smart-WP-Plugins/unwan-address-library-for-woocommerce](https://github.com/Smart-WP-Plugins/unwan-address-library-for-woocommerce) — that's also where to file a bug report or feature request as an issue.
+
 = One address book. Not two. =
 
 Instead of a billing list and a separate shipping list, Unwan keeps a single, deduplicated library per customer:
@@ -193,10 +195,6 @@ No. The saved-address filter uses `autocomplete="new-search"`, disables spelling
 = Is Unwan built to WordPress coding standards? =
 
 Yes. The codebase uses PSR-4 autoloading with namespaced classes, and every release is checked against the WordPress Coding Standards PHPCS ruleset (WordPress-Extra plus PHPCompatibilityWP) before publishing.
-
-= Where is the human-readable source code for the JavaScript in this plugin? =
-
-The `build/` folder contains compiled, minified JavaScript (produced by `webpack` via `@wordpress/scripts`). The plugin package also ships the complete, unminified source those files are built from, in the matching `src/` folder: `src/unwan-address-picker.js` is the source for `build/unwan-address-picker.js`, and `src/blocks/editor.js` / `src/blocks/frontend.js` are the sources for `build/blocks/editor.js` / `build/blocks/frontend.js`. Running `npm install && npm run build` from the plugin's root regenerates `build/` from `src/` using the standard `@wordpress/scripts` toolchain — no project-specific build steps beyond that.
 
 == Changelog ==
 
