@@ -146,6 +146,13 @@ and customers with nothing saved yet.
 
 == Screenshots ==
 
+1. My Account address book — billing and shipping default cards plus one combined, searchable list of every saved address, with default badges and a three-dot action menu for edit, make default, and delete.
+2. Adding or editing an address — a single form for every address, with checkboxes to set it as the default shipping and/or billing address.
+3. Checkout Blocks — the saved-address picker appears above the native shipping and billing fields, with search once the list grows and an "Enter a new address" option.
+4. Classic checkout — the identical picker, search, and labels on the shortcode-based checkout for stores that haven't moved to Checkout Blocks.
+5. Store settings — WooCommerce > Settings > Accounts & Privacy > Unwan, where every selector, limit, threshold, default behavior, color mode, and label is configurable.
+6. Responsive on mobile — the address list becomes full-width cards and the checkout picker stays a comfortable, one-thumb-wide tap target.
+
 == Frequently Asked Questions ==
 
 = Where can I find full documentation? =

@@ -7,6 +7,7 @@ CLAUDE.md
 .gitignore
 .distignore
 .editorconfig
+wordpress-svn/**
 
 # Dependencies, tests, and build configuration
 # (src/** ships in the release zip, unminified, as the human-readable

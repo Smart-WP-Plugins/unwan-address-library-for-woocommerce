@@ -38,6 +38,9 @@ yarn-error.log*
 *.zip
 *.tgz
 
+# WordPress.org SVN working copy
+/wordpress-svn/
+
 # Internal project references
 /*.md
 !README.md
