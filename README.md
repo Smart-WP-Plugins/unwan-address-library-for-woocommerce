@@ -1,4 +1,4 @@
-# Unwan – Address Library for WooCommerce
+# Unwan – Multiple Address Book for WooCommerce
 
 A single, unified address book for WooCommerce — one saved-address library for checkout and My Account, with full Checkout Blocks support.
 

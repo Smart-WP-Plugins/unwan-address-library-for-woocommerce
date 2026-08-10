@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:       Unwan – Address Library for WooCommerce
+ * Plugin Name:       Unwan – Multiple Address Book for WooCommerce
  * Description:       Give WooCommerce customers a reusable address book for My Account, classic checkout, and Checkout Blocks.
  * Version:           1.0.0
  * Requires at least: 6.5

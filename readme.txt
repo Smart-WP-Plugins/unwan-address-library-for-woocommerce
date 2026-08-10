@@ -1,4 +1,4 @@
-=== Unwan – Address Library for WooCommerce ===
+=== Unwan – Multiple Address Book for WooCommerce ===
 Contributors: smartwpplugins, jeetsaha86
 Tags: woocommerce, address book, multiple addresses, checkout, checkout block
 Requires at least: 6.5
@@ -85,7 +85,7 @@ Unwan is developed and maintained by [SmartWP Plugins](https://smartwpplugins.co
 
 1. Download `unwan-for-woocommerce.zip`.
 2. In your dashboard, go to **Plugins > Add New Plugin > Upload Plugin** and select the file (or upload the unzipped folder via FTP/SFTP).
-3. Find "Unwan – Address Library for WooCommerce" in your plugins list and click **Activate**.
+3. Find "Unwan – Multiple Address Book for WooCommerce" in your plugins list and click **Activate**.
 
 = Using it =
 
