@@ -4,7 +4,7 @@ Tags: woocommerce, address book, multiple addresses, checkout, checkout block
 Requires at least: 6.5
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires Plugins: woocommerce
@@ -139,6 +139,10 @@ Yes — light, dark, or automatic (matches the customer's device), plus any acce
 It's kept by default. If you'd rather everything be removed, there's a setting for that under **WooCommerce > Settings > Accounts & Privacy > Unwan**. Either way, your customers' regular WooCommerce billing and shipping details are never touched.
 
 == Changelog ==
+
+= 1.0.1 =
+
+* Renamed the plugin to Unwan – Multiple Address Book for WooCommerce (slug unchanged).
 
 = 1.0.0 =
 
