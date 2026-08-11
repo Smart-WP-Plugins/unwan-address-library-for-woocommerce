@@ -2,14 +2,14 @@
 Contributors: smartwpplugins, jeetsaha86
 Tags: woocommerce, address book, multiple addresses, checkout, checkout block
 Requires at least: 6.5
-Tested up to: 7.0
+Tested up to: 7.0.2
 Requires PHP: 7.4
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires Plugins: woocommerce
 WC requires at least: 8.2
-WC tested up to: 10.9
+WC tested up to: 11.0.1
 
 One easy address book for WooCommerce. Customers save an address once and use it everywhere — at checkout and in their account.
 
@@ -139,6 +139,10 @@ Yes — light, dark, or automatic (matches the customer's device), plus any acce
 It's kept by default. If you'd rather everything be removed, there's a setting for that under **WooCommerce > Settings > Accounts & Privacy > Unwan**. Either way, your customers' regular WooCommerce billing and shipping details are never touched.
 
 == Changelog ==
+
+= 1.0.2 =
+
+* Verified compatibility with WordPress 7.0.2 and WooCommerce 11.0.1.
 
 = 1.0.1 =
 

@@ -2,12 +2,12 @@
 /**
  * Plugin Name:       Unwan – Multiple Address Book for WooCommerce
  * Description:       Give WooCommerce customers a reusable address book for My Account, classic checkout, and Checkout Blocks.
- * Version:           1.0.1
+ * Version:           1.0.2
  * Requires at least: 6.5
  * Requires PHP:      7.4
  * Requires Plugins:  woocommerce
  * WC requires at least: 8.2
- * WC tested up to:   10.9
+ * WC tested up to:   11.0.1
  * Author:            SmartWP Plugins
  * Author URI:        https://smartwpplugins.com/
  * License:           GPLv2 or later
@@ -19,7 +19,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'UNWAN_VERSION', '1.0.1' );
+define( 'UNWAN_VERSION', '1.0.2' );
 define( 'UNWAN_FILE', __FILE__ );
 define( 'UNWAN_PATH', plugin_dir_path( __FILE__ ) );
 define( 'UNWAN_URL', plugin_dir_url( __FILE__ ) );
