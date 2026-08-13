@@ -1,0 +1,483 @@
+# Copyright (C) 2026 SmartWP Plugins
+# This file is distributed under the GPL-2.0-or-later license.
+msgid ""
+msgstr ""
+"Project-Id-Version: Unwan – Multiple Address Book for WooCommerce 1.0.2\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/unwan-for-woocommerce/\n"
+"POT-Creation-Date: 2026-08-14 00:49+0530\n"
+"PO-Revision-Date: 2026-08-14 00:34+0530\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: includes/AccountController.php:97 includes/AccountController.php:106
+#: includes/Admin/Settings.php:63
+msgid "Address book"
+msgstr "アドレス帳"
+
+#: includes/AccountController.php:143 includes/AddressRepository.php:462
+#: includes/AddressRepository.php:508 includes/AddressRepository.php:554
+#: includes/AddressRepository.php:587
+msgid "That saved address could not be found."
+msgstr "保存された住所が見つかりませんでした。"
+
+#. translators: %s: address field label.
+#: includes/AccountController.php:258
+#, php-format
+msgid "%s is required."
+msgstr "%s は必須です。"
+
+#: includes/AccountController.php:264
+msgid "Please enter a valid phone number."
+msgstr "有効な電話番号を入力してください。"
+
+#: includes/AccountController.php:273
+msgid "Please enter a complete postal address."
+msgstr "完全な住所を入力してください。"
+
+#: includes/AccountController.php:301
+msgid "Address saved."
+msgstr "住所を保存しました。"
+
+#: includes/AccountController.php:319
+msgid "Address deleted."
+msgstr "住所を削除しました。"
+
+#: includes/AccountController.php:343
+msgid "Default address updated."
+msgstr "デフォルトの住所を更新しました。"
+
+#: includes/AddressRepository.php:286 includes/Admin/Settings.php:401
+msgid "Address"
+msgstr "住所"
+
+#: includes/AddressRepository.php:427
+msgid "Your address book has reached its saved-address limit."
+msgstr "アドレス帳の保存件数が上限に達しています。"
+
+#: includes/AddressRepository.php:471
+msgid "That address is already in your address book."
+msgstr "その住所はすでにアドレス帳に登録されています。"
+
+#: includes/AddressRepository.php:561
+msgid "Change this address’s default roles before deleting it."
+msgstr "削除する前に、この住所のデフォルト役割を変更してください。"
+
+#. translators: 1: recipient name, 2: formatted postal address.
+#: includes/AddressRepository.php:738
+#, php-format
+msgid "%1$s (default) — %2$s"
+msgstr "%1$s (デフォルト) — %2$s"
+
+#: includes/Admin/Settings.php:44
+msgid "Unwan"
+msgstr "Unwan"
+
+#: includes/Admin/Settings.php:64
+msgid "Control where Unwan appears and how checkout addresses are stored."
+msgstr "Unwan を表示する場所と、注文手続きで入力された住所の保存方法を設定します。"
+
+#: includes/Admin/Settings.php:69
+msgid "Billing checkout selector"
+msgstr "注文手続きの請求先セレクター"
+
+#: includes/Admin/Settings.php:70
+msgid "Let customers choose any address-book entry for billing"
+msgstr "請求先としてアドレス帳の任意の住所を選べるようにする"
+
+#: includes/Admin/Settings.php:76
+msgid "Shipping checkout selector"
+msgstr "注文手続きの配送先セレクター"
+
+#: includes/Admin/Settings.php:77
+msgid "Let customers choose any address-book entry for shipping"
+msgstr "配送先としてアドレス帳の任意の住所を選べるようにする"
+
+#: includes/Admin/Settings.php:83
+msgid "Additional address limit"
+msgstr "追加住所の上限"
+
+#: includes/Admin/Settings.php:84
+msgid "Maximum additional addresses per customer. Billing and shipping defaults are not counted. Use 0 for unlimited."
+msgstr "顧客ごとの追加住所の上限数です。デフォルトの請求先住所と配送先住所は含みません。0 で無制限になります。"
+
+#: includes/Admin/Settings.php:95
+msgid "Address search threshold"
+msgstr "住所検索のしきい値"
+
+#: includes/Admin/Settings.php:96
+msgid "Show search in checkout and My Account when a customer has more than this many addresses. Use 0 to always show it."
+msgstr "顧客の住所がこの件数を超えたとき、注文手続きとマイアカウントに検索を表示します。0 で常に表示します。"
+
+#: includes/Admin/Settings.php:108
+msgid "Save checkout addresses"
+msgstr "注文手続きの住所を保存"
+
+#: includes/Admin/Settings.php:109
+msgid "Add a new address entered at checkout to the customer’s address book"
+msgstr "注文手続きで入力された新しい住所を顧客のアドレス帳に追加する"
+
+#: includes/Admin/Settings.php:115
+msgid "New address defaults"
+msgstr "新しい住所のデフォルト設定"
+
+#: includes/Admin/Settings.php:116
+msgid "Choose whether a new address entered at checkout should replace the matching billing or shipping profile default."
+msgstr "注文手続きで入力された新しい住所を、対応するプロフィールの請求先または配送先のデフォルトと置き換えるかどうかを選択します。"
+
+#: includes/Admin/Settings.php:121
+msgid "Keep the current defaults"
+msgstr "現在のデフォルトを維持する"
+
+#: includes/Admin/Settings.php:122
+msgid "Make the new address the matching default"
+msgstr "新しい住所を対応するデフォルトにする"
+
+#: includes/Admin/Settings.php:130
+msgid "Appearance"
+msgstr "外観"
+
+#: includes/Admin/Settings.php:131
+msgid "These values are exposed through scoped Unwan CSS variables and do not restyle the active theme."
+msgstr "これらの値は Unwan 専用のスコープ付き CSS 変数として提供され、有効なテーマのスタイルは変更しません。"
+
+#: includes/Admin/Settings.php:136
+msgid "Color mode"
+msgstr "カラーモード"
+
+#: includes/Admin/Settings.php:141
+msgid "Light"
+msgstr "ライト"
+
+#: includes/Admin/Settings.php:142
+msgid "Dark"
+msgstr "ダーク"
+
+#: includes/Admin/Settings.php:143
+msgid "Follow the customer’s device"
+msgstr "顧客の端末に合わせる"
+
+#: includes/Admin/Settings.php:147
+msgid "Accent color"
+msgstr "アクセントカラー"
+
+#: includes/Admin/Settings.php:158
+msgid "Text and labels"
+msgstr "テキストとラベル"
+
+#: includes/Admin/Settings.php:159
+msgid "Customize customer-facing interface copy. Translations can still override the defaults."
+msgstr "顧客に表示されるインターフェイスの文言をカスタマイズします。翻訳による上書きも引き続き有効です。"
+
+#: includes/Admin/Settings.php:163
+msgid "Address-book page title"
+msgstr "アドレス帳のページタイトル"
+
+#: includes/Admin/Settings.php:163 includes/Admin/Settings.php:371
+msgid "Addresses"
+msgstr "住所一覧"
+
+#: includes/Admin/Settings.php:166
+msgid "Address-book description"
+msgstr "アドレス帳の説明"
+
+#: includes/Admin/Settings.php:167 includes/Admin/Settings.php:374
+msgid "Your billing default, shipping default, and additional addresses form one address book. Every address can be used anywhere at checkout."
+msgstr "デフォルトの請求先住所、デフォルトの配送先住所、および追加の住所は 1 つのアドレス帳にまとまります。どの住所も注文手続きのどこでも使用できます。"
+
+#: includes/Admin/Settings.php:169
+msgid "Add-address button"
+msgstr "住所追加ボタン"
+
+#: includes/Admin/Settings.php:169 includes/Admin/Settings.php:376
+msgid "Add new address"
+msgstr "住所を追加"
+
+#: includes/Admin/Settings.php:170
+msgid "Add-address heading"
+msgstr "住所追加の見出し"
+
+#: includes/Admin/Settings.php:170 includes/Admin/Settings.php:377
+msgid "Add a new address"
+msgstr "新しい住所を追加"
+
+#: includes/Admin/Settings.php:171
+msgid "Edit-address heading"
+msgstr "住所編集の見出し"
+
+#: includes/Admin/Settings.php:171 includes/Admin/Settings.php:378
+msgid "Edit address"
+msgstr "住所を編集"
+
+#: includes/Admin/Settings.php:172
+msgid "Back link"
+msgstr "戻るリンク"
+
+#: includes/Admin/Settings.php:172 includes/Admin/Settings.php:379
+msgid "Back to addresses"
+msgstr "住所一覧に戻る"
+
+#: includes/Admin/Settings.php:173
+msgid "Save button"
+msgstr "保存ボタン"
+
+#: includes/Admin/Settings.php:173 includes/Admin/Settings.php:380
+msgid "Save address"
+msgstr "住所を保存"
+
+#: includes/Admin/Settings.php:174
+msgid "Cancel action"
+msgstr "キャンセル操作"
+
+#: includes/Admin/Settings.php:174 includes/Admin/Settings.php:381
+msgid "Cancel"
+msgstr "キャンセル"
+
+#: includes/Admin/Settings.php:175
+msgid "Empty-state heading"
+msgstr "空の状態の見出し"
+
+#: includes/Admin/Settings.php:175 includes/Admin/Settings.php:382
+msgid "You haven’t saved an address yet"
+msgstr "まだ住所が保存されていません"
+
+#: includes/Admin/Settings.php:178
+msgid "Empty-state description"
+msgstr "空の状態の説明"
+
+#: includes/Admin/Settings.php:179 includes/Admin/Settings.php:385
+msgid "Add one now and it will be available to both billing and shipping at checkout."
+msgstr "今すぐ追加すると、注文手続きで請求先にも配送先にも使えるようになります。"
+
+#: includes/Admin/Settings.php:181
+msgid "Billing summary heading"
+msgstr "請求先サマリーの見出し"
+
+#: includes/Admin/Settings.php:181 includes/Admin/Settings.php:402
+msgid "Billing to"
+msgstr "ご請求先"
+
+#: includes/Admin/Settings.php:182
+msgid "Shipping summary heading"
+msgstr "配送先サマリーの見出し"
+
+#: includes/Admin/Settings.php:182 includes/Admin/Settings.php:403
+msgid "Delivering to"
+msgstr "お届け先"
+
+#: includes/Admin/Settings.php:183
+msgid "Billing picker heading"
+msgstr "請求先セレクターの見出し"
+
+#: includes/Admin/Settings.php:183 includes/Admin/Settings.php:404
+msgid "Bill to"
+msgstr "請求先住所"
+
+#: includes/Admin/Settings.php:184
+msgid "Shipping picker heading"
+msgstr "配送先セレクターの見出し"
+
+#: includes/Admin/Settings.php:184 includes/Admin/Settings.php:405
+msgid "Deliver to"
+msgstr "配送先住所"
+
+#: includes/Admin/Settings.php:185
+msgid "Search placeholder"
+msgstr "検索のプレースホルダー"
+
+#: includes/Admin/Settings.php:185 includes/Admin/Settings.php:415
+msgid "Filter by street, city or postcode"
+msgstr "番地、市区町村、郵便番号で絞り込む"
+
+#: includes/Admin/Settings.php:186
+msgid "New-address choice"
+msgstr "新しい住所の選択肢"
+
+#: includes/Admin/Settings.php:186 includes/Admin/Settings.php:417
+msgid "Enter a new address"
+msgstr "新しい住所を入力"
+
+#: includes/Admin/Settings.php:187
+msgid "Change action"
+msgstr "変更操作"
+
+#: includes/Admin/Settings.php:187 includes/Admin/Settings.php:419
+#: templates/myaccount/address-book.php:83
+msgid "Change"
+msgstr "変更"
+
+#: includes/Admin/Settings.php:193
+msgid "Data removal"
+msgstr "データの削除"
+
+#: includes/Admin/Settings.php:194
+msgid "Choose whether customer address-book data and plugin settings should remain after uninstalling Unwan."
+msgstr "Unwan をアンインストールした後も、顧客のアドレス帳データとプラグイン設定を残すかどうかを選択します。"
+
+#: includes/Admin/Settings.php:199
+msgid "Uninstall cleanup"
+msgstr "アンインストール時のクリーンアップ"
+
+#: includes/Admin/Settings.php:200
+msgid "Permanently remove all Unwan settings and additional customer addresses when the plugin is deleted"
+msgstr "プラグインの削除時に、Unwan のすべての設定と顧客の追加住所を完全に削除する"
+
+#: includes/Admin/Settings.php:201
+msgid "WooCommerce billing and shipping profile addresses are not removed."
+msgstr "WooCommerce プロフィールの請求先住所と配送先住所は削除されません。"
+
+#. translators: %d: number of saved addresses.
+#. translators: %d: total number of unique addresses.
+#: includes/Admin/Settings.php:407 includes/Admin/Settings.php:409
+#: templates/myaccount/address-book.php:95
+#, php-format
+msgid "%d saved address"
+msgid_plural "%d saved addresses"
+msgstr[0] "保存済みの住所 %d 件"
+
+#. translators: %d: number of additional saved addresses not currently shown.
+#: includes/Admin/Settings.php:411 includes/Admin/Settings.php:413
+#, php-format
+msgid "%d more saved address"
+msgid_plural "%d more saved addresses"
+msgstr[0] "他に保存済みの住所 %d 件"
+
+#: includes/Admin/Settings.php:414
+msgid "Search saved addresses"
+msgstr "保存済みの住所を検索"
+
+#: includes/Admin/Settings.php:416
+msgid "No saved addresses match your search."
+msgstr "検索条件に一致する保存済みの住所はありません。"
+
+#: includes/Admin/Settings.php:418
+msgid "Default"
+msgstr "デフォルト"
+
+#: includes/Checkout/BlocksController.php:202
+msgid "Selected billing address-book entry."
+msgstr "請求先として選択されたアドレス帳の項目。"
+
+#: includes/Checkout/BlocksController.php:207
+msgid "Selected shipping address-book entry."
+msgstr "配送先として選択されたアドレス帳の項目。"
+
+#: includes/Checkout/ClassicCheckout.php:153
+msgid "Please choose a valid saved address."
+msgstr "有効な保存済みの住所を選択してください。"
+
+#: includes/Plugin.php:121
+msgid "Settings"
+msgstr "設定"
+
+#: templates/myaccount/address-book.php:56
+msgid "Ships to"
+msgstr "配送先"
+
+#: templates/myaccount/address-book.php:57
+msgid "Bills to"
+msgstr "請求先"
+
+#: templates/myaccount/address-book.php:75
+msgid "No default address"
+msgstr "デフォルトの住所がありません"
+
+#: templates/myaccount/address-book.php:76
+msgid "Add an address and assign this role."
+msgstr "住所を追加して、この役割を割り当ててください。"
+
+#: templates/myaccount/address-book.php:83
+msgid "Add"
+msgstr "追加"
+
+#: templates/myaccount/address-book.php:100
+msgid "Defaults first, then recently updated"
+msgstr "デフォルトを先頭に、その後は更新順"
+
+#: templates/myaccount/address-book.php:171
+msgid "Billing default"
+msgstr "請求先デフォルト"
+
+#: templates/myaccount/address-book.php:172
+msgid "Shipping default"
+msgstr "配送先デフォルト"
+
+#. translators: %s: street address of this address-book entry.
+#: templates/myaccount/address-book.php:187
+#, php-format
+msgid "Actions for %s"
+msgstr "%s の操作"
+
+#: templates/myaccount/address-book.php:194
+msgid "Edit"
+msgstr "編集"
+
+#: templates/myaccount/address-book.php:207
+msgid "Already the default billing address"
+msgstr "すでにデフォルトの請求先住所です"
+
+#: templates/myaccount/address-book.php:207
+msgid "Already the default shipping address"
+msgstr "すでにデフォルトの配送先住所です"
+
+#: templates/myaccount/address-book.php:213
+msgid "Make default billing"
+msgstr "デフォルトの請求先にする"
+
+#: templates/myaccount/address-book.php:214
+msgid "Make default shipping"
+msgstr "デフォルトの配送先にする"
+
+#: templates/myaccount/address-book.php:225
+msgid "Delete this saved address?"
+msgstr "この保存済みの住所を削除しますか？"
+
+#: templates/myaccount/address-book.php:234
+msgid "Change its default roles before deleting this address"
+msgstr "この住所を削除する前にデフォルト役割を変更してください"
+
+#: templates/myaccount/address-book.php:237
+msgid "Delete"
+msgstr "削除"
+
+#: templates/myaccount/address-book.php:254
+msgid "You have reached the additional-address limit. Delete an extra address before adding another."
+msgstr "追加住所の上限に達しました。別の住所を追加する前に、追加住所を 1 件削除してください。"
+
+#: templates/myaccount/address-form.php:43
+msgid "Use this address for"
+msgstr "この住所の用途"
+
+#: templates/myaccount/address-form.php:51
+msgid "Default shipping address"
+msgstr "デフォルトの配送先住所"
+
+#: templates/myaccount/address-form.php:60
+msgid "Default billing address"
+msgstr "デフォルトの請求先住所"
+
+#: templates/myaccount/address-form.php:63
+msgid "Leave both unchecked to keep this as an additional address available everywhere at checkout."
+msgstr "どちらもチェックしない場合、注文手続きのどこでも使える追加住所として保存されます。"
+
+#. translators: %s: minimum WooCommerce version.
+#: unwan-for-woocommerce.php:87
+#, php-format
+msgid "Unwan requires WooCommerce %s or newer."
+msgstr "Unwan には WooCommerce %s 以降が必要です。"
+
+#: src/blocks/editor.js:26
+msgid "Billing address book"
+msgstr "請求先アドレス帳"
+
+#: src/blocks/editor.js:27
+msgid "Shipping address book"
+msgstr "配送先アドレス帳"
+
+#: src/blocks/editor.js:34
+msgid "Signed-in customers can choose a saved address here."
+msgstr "ログイン中の顧客はここで保存済みの住所を選択できます。"

@@ -204,15 +204,14 @@ defined( 'ABSPATH' ) || exit;
 													type="submit"
 													class="unwan-address-item__menu-action"
 													role="menuitem"
-													<?php /* translators: %s: "billing" or "shipping". */ ?>
-													title="<?php echo esc_attr( in_array( $role, $unwan_roles, true ) ? sprintf( __( 'Already the default %s address', 'unwan-for-woocommerce' ), $role ) : '' ); ?>"
+													title="<?php echo esc_attr( in_array( $role, $unwan_roles, true ) ? ( 'billing' === $role ? __( 'Already the default billing address', 'unwan-for-woocommerce' ) : __( 'Already the default shipping address', 'unwan-for-woocommerce' ) ) : '' ); ?>"
 													<?php disabled( in_array( $role, $unwan_roles, true ) ); ?>
 												>
 													<?php
-													printf(
-														/* translators: %s: billing or shipping. */
-														esc_html__( 'Make default %s', 'unwan-for-woocommerce' ),
-														esc_html( $role )
+													echo esc_html(
+														'billing' === $role
+															? __( 'Make default billing', 'unwan-for-woocommerce' )
+															: __( 'Make default shipping', 'unwan-for-woocommerce' )
 													);
 													?>
 												</button>

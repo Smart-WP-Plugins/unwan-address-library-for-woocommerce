@@ -73,11 +73,34 @@ final class Plugin {
 		( new ClassicCheckout( $repository, $settings ) )->register();
 		( new BlocksController( $repository, $settings ) )->register();
 
+		add_action( 'init', array( $this, 'load_textdomain' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_styles' ), 99 );
 		add_filter( 'body_class', array( $this, 'add_color_scheme_body_class' ) );
 		add_filter(
 			'plugin_action_links_' . plugin_basename( UNWAN_FILE ),
 			array( $this, 'add_plugin_action_links' )
+		);
+	}
+
+	/**
+	 * Register the bundled translations directory.
+	 *
+	 * WordPress.org-hosted plugins usually need no loader, because core finds
+	 * translations in WP_LANG_DIR on its own. Unwan also ships its own
+	 * catalogues under languages/, and WP_Textdomain_Registry only searches a
+	 * plugin-local directory once it has been registered through this call —
+	 * without it the bundled .mo files would never load. Community translations
+	 * still take precedence: WP_LANG_DIR is checked ahead of the custom path,
+	 * so a locale published on translate.wordpress.org overrides the copy
+	 * shipped here.
+	 *
+	 * @return void
+	 */
+	public function load_textdomain(): void {
+		load_plugin_textdomain(
+			'unwan-for-woocommerce',
+			false,
+			dirname( plugin_basename( UNWAN_FILE ) ) . '/languages'
 		);
 	}
 

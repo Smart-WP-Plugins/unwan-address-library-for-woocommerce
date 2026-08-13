@@ -197,7 +197,7 @@ final class AccountController {
 			! is_user_logged_in()
 			|| ! is_account_page()
 			|| ! is_wc_endpoint_url( self::ENDPOINT )
-			|| 'POST' !== strtoupper( (string) wp_unslash( $_SERVER['REQUEST_METHOD'] ?? '' ) )
+			|| 'POST' !== strtoupper( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ?? '' ) ) )
 		) {
 			return;
 		}

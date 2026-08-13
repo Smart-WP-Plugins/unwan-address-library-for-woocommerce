@@ -1,0 +1,485 @@
+# Copyright (C) 2026 SmartWP Plugins
+# This file is distributed under the GPL-2.0-or-later license.
+msgid ""
+msgstr ""
+"Project-Id-Version: Unwan – Multiple Address Book for WooCommerce 1.0.2\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/unwan-for-woocommerce/\n"
+"POT-Creation-Date: 2026-08-14 00:49+0530\n"
+"PO-Revision-Date: 2026-08-14 00:34+0530\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: includes/AccountController.php:97 includes/AccountController.php:106
+#: includes/Admin/Settings.php:63
+msgid "Address book"
+msgstr "Carnet d’adresses"
+
+#: includes/AccountController.php:143 includes/AddressRepository.php:462
+#: includes/AddressRepository.php:508 includes/AddressRepository.php:554
+#: includes/AddressRepository.php:587
+msgid "That saved address could not be found."
+msgstr "Cette adresse enregistrée est introuvable."
+
+#. translators: %s: address field label.
+#: includes/AccountController.php:258
+#, php-format
+msgid "%s is required."
+msgstr "%s est obligatoire."
+
+#: includes/AccountController.php:264
+msgid "Please enter a valid phone number."
+msgstr "Veuillez saisir un numéro de téléphone valide."
+
+#: includes/AccountController.php:273
+msgid "Please enter a complete postal address."
+msgstr "Veuillez saisir une adresse postale complète."
+
+#: includes/AccountController.php:301
+msgid "Address saved."
+msgstr "Adresse enregistrée."
+
+#: includes/AccountController.php:319
+msgid "Address deleted."
+msgstr "Adresse supprimée."
+
+#: includes/AccountController.php:343
+msgid "Default address updated."
+msgstr "Adresse par défaut mise à jour."
+
+#: includes/AddressRepository.php:286 includes/Admin/Settings.php:401
+msgid "Address"
+msgstr "Adresse"
+
+#: includes/AddressRepository.php:427
+msgid "Your address book has reached its saved-address limit."
+msgstr "Votre carnet d’adresses a atteint sa limite d’adresses enregistrées."
+
+#: includes/AddressRepository.php:471
+msgid "That address is already in your address book."
+msgstr "Cette adresse figure déjà dans votre carnet d’adresses."
+
+#: includes/AddressRepository.php:561
+msgid "Change this address’s default roles before deleting it."
+msgstr "Modifiez les rôles par défaut de cette adresse avant de la supprimer."
+
+#. translators: 1: recipient name, 2: formatted postal address.
+#: includes/AddressRepository.php:738
+#, php-format
+msgid "%1$s (default) — %2$s"
+msgstr "%1$s (par défaut) — %2$s"
+
+#: includes/Admin/Settings.php:44
+msgid "Unwan"
+msgstr "Unwan"
+
+#: includes/Admin/Settings.php:64
+msgid "Control where Unwan appears and how checkout addresses are stored."
+msgstr "Choisissez où Unwan apparaît et comment les adresses saisies à la commande sont enregistrées."
+
+#: includes/Admin/Settings.php:69
+msgid "Billing checkout selector"
+msgstr "Sélecteur de facturation à la commande"
+
+#: includes/Admin/Settings.php:70
+msgid "Let customers choose any address-book entry for billing"
+msgstr "Permettre aux clients de choisir n’importe quelle adresse du carnet pour la facturation"
+
+#: includes/Admin/Settings.php:76
+msgid "Shipping checkout selector"
+msgstr "Sélecteur de livraison à la commande"
+
+#: includes/Admin/Settings.php:77
+msgid "Let customers choose any address-book entry for shipping"
+msgstr "Permettre aux clients de choisir n’importe quelle adresse du carnet pour la livraison"
+
+#: includes/Admin/Settings.php:83
+msgid "Additional address limit"
+msgstr "Limite d’adresses supplémentaires"
+
+#: includes/Admin/Settings.php:84
+msgid "Maximum additional addresses per customer. Billing and shipping defaults are not counted. Use 0 for unlimited."
+msgstr "Nombre maximal d’adresses supplémentaires par client. Les adresses de facturation et de livraison par défaut ne sont pas comptées. Utilisez 0 pour un nombre illimité."
+
+#: includes/Admin/Settings.php:95
+msgid "Address search threshold"
+msgstr "Seuil de recherche d’adresses"
+
+#: includes/Admin/Settings.php:96
+msgid "Show search in checkout and My Account when a customer has more than this many addresses. Use 0 to always show it."
+msgstr "Afficher la recherche à la commande et dans Mon compte lorsqu’un client dépasse ce nombre d’adresses. Utilisez 0 pour toujours l’afficher."
+
+#: includes/Admin/Settings.php:108
+msgid "Save checkout addresses"
+msgstr "Enregistrer les adresses saisies à la commande"
+
+#: includes/Admin/Settings.php:109
+msgid "Add a new address entered at checkout to the customer’s address book"
+msgstr "Ajouter au carnet d’adresses du client toute nouvelle adresse saisie à la commande"
+
+#: includes/Admin/Settings.php:115
+msgid "New address defaults"
+msgstr "Valeurs par défaut des nouvelles adresses"
+
+#: includes/Admin/Settings.php:116
+msgid "Choose whether a new address entered at checkout should replace the matching billing or shipping profile default."
+msgstr "Choisissez si une nouvelle adresse saisie à la commande doit remplacer l’adresse de facturation ou de livraison par défaut du profil."
+
+#: includes/Admin/Settings.php:121
+msgid "Keep the current defaults"
+msgstr "Conserver les adresses par défaut actuelles"
+
+#: includes/Admin/Settings.php:122
+msgid "Make the new address the matching default"
+msgstr "Définir la nouvelle adresse comme adresse par défaut correspondante"
+
+#: includes/Admin/Settings.php:130
+msgid "Appearance"
+msgstr "Apparence"
+
+#: includes/Admin/Settings.php:131
+msgid "These values are exposed through scoped Unwan CSS variables and do not restyle the active theme."
+msgstr "Ces valeurs sont exposées via des variables CSS Unwan cloisonnées et ne modifient pas les styles du thème actif."
+
+#: includes/Admin/Settings.php:136
+msgid "Color mode"
+msgstr "Mode de couleur"
+
+#: includes/Admin/Settings.php:141
+msgid "Light"
+msgstr "Clair"
+
+#: includes/Admin/Settings.php:142
+msgid "Dark"
+msgstr "Sombre"
+
+#: includes/Admin/Settings.php:143
+msgid "Follow the customer’s device"
+msgstr "Suivre l’appareil du client"
+
+#: includes/Admin/Settings.php:147
+msgid "Accent color"
+msgstr "Couleur d’accentuation"
+
+#: includes/Admin/Settings.php:158
+msgid "Text and labels"
+msgstr "Textes et libellés"
+
+#: includes/Admin/Settings.php:159
+msgid "Customize customer-facing interface copy. Translations can still override the defaults."
+msgstr "Personnalisez les textes de l’interface visibles par les clients. Les traductions peuvent toujours remplacer les valeurs par défaut."
+
+#: includes/Admin/Settings.php:163
+msgid "Address-book page title"
+msgstr "Titre de la page du carnet d’adresses"
+
+#: includes/Admin/Settings.php:163 includes/Admin/Settings.php:371
+msgid "Addresses"
+msgstr "Adresses"
+
+#: includes/Admin/Settings.php:166
+msgid "Address-book description"
+msgstr "Description du carnet d’adresses"
+
+#: includes/Admin/Settings.php:167 includes/Admin/Settings.php:374
+msgid "Your billing default, shipping default, and additional addresses form one address book. Every address can be used anywhere at checkout."
+msgstr "Votre adresse de facturation par défaut, votre adresse de livraison par défaut et vos adresses supplémentaires forment un seul carnet d’adresses. Chaque adresse peut être utilisée partout à la commande."
+
+#: includes/Admin/Settings.php:169
+msgid "Add-address button"
+msgstr "Bouton d’ajout d’adresse"
+
+#: includes/Admin/Settings.php:169 includes/Admin/Settings.php:376
+msgid "Add new address"
+msgstr "Ajouter une adresse"
+
+#: includes/Admin/Settings.php:170
+msgid "Add-address heading"
+msgstr "Titre d’ajout d’adresse"
+
+#: includes/Admin/Settings.php:170 includes/Admin/Settings.php:377
+msgid "Add a new address"
+msgstr "Ajouter une nouvelle adresse"
+
+#: includes/Admin/Settings.php:171
+msgid "Edit-address heading"
+msgstr "Titre de modification d’adresse"
+
+#: includes/Admin/Settings.php:171 includes/Admin/Settings.php:378
+msgid "Edit address"
+msgstr "Modifier l’adresse"
+
+#: includes/Admin/Settings.php:172
+msgid "Back link"
+msgstr "Lien de retour"
+
+#: includes/Admin/Settings.php:172 includes/Admin/Settings.php:379
+msgid "Back to addresses"
+msgstr "Retour aux adresses"
+
+#: includes/Admin/Settings.php:173
+msgid "Save button"
+msgstr "Bouton d’enregistrement"
+
+#: includes/Admin/Settings.php:173 includes/Admin/Settings.php:380
+msgid "Save address"
+msgstr "Enregistrer l’adresse"
+
+#: includes/Admin/Settings.php:174
+msgid "Cancel action"
+msgstr "Action d’annulation"
+
+#: includes/Admin/Settings.php:174 includes/Admin/Settings.php:381
+msgid "Cancel"
+msgstr "Annuler"
+
+#: includes/Admin/Settings.php:175
+msgid "Empty-state heading"
+msgstr "Titre de l’état vide"
+
+#: includes/Admin/Settings.php:175 includes/Admin/Settings.php:382
+msgid "You haven’t saved an address yet"
+msgstr "Vous n’avez pas encore enregistré d’adresse"
+
+#: includes/Admin/Settings.php:178
+msgid "Empty-state description"
+msgstr "Description de l’état vide"
+
+#: includes/Admin/Settings.php:179 includes/Admin/Settings.php:385
+msgid "Add one now and it will be available to both billing and shipping at checkout."
+msgstr "Ajoutez-en une maintenant : elle sera disponible à la fois pour la facturation et la livraison à la commande."
+
+#: includes/Admin/Settings.php:181
+msgid "Billing summary heading"
+msgstr "Titre du résumé de facturation"
+
+#: includes/Admin/Settings.php:181 includes/Admin/Settings.php:402
+msgid "Billing to"
+msgstr "Facturation à"
+
+#: includes/Admin/Settings.php:182
+msgid "Shipping summary heading"
+msgstr "Titre du résumé de livraison"
+
+#: includes/Admin/Settings.php:182 includes/Admin/Settings.php:403
+msgid "Delivering to"
+msgstr "Livraison à"
+
+#: includes/Admin/Settings.php:183
+msgid "Billing picker heading"
+msgstr "Titre du sélecteur de facturation"
+
+#: includes/Admin/Settings.php:183 includes/Admin/Settings.php:404
+msgid "Bill to"
+msgstr "Facturer à"
+
+#: includes/Admin/Settings.php:184
+msgid "Shipping picker heading"
+msgstr "Titre du sélecteur de livraison"
+
+#: includes/Admin/Settings.php:184 includes/Admin/Settings.php:405
+msgid "Deliver to"
+msgstr "Livrer à"
+
+#: includes/Admin/Settings.php:185
+msgid "Search placeholder"
+msgstr "Texte indicatif de la recherche"
+
+#: includes/Admin/Settings.php:185 includes/Admin/Settings.php:415
+msgid "Filter by street, city or postcode"
+msgstr "Filtrer par rue, ville ou code postal"
+
+#: includes/Admin/Settings.php:186
+msgid "New-address choice"
+msgstr "Choix de nouvelle adresse"
+
+#: includes/Admin/Settings.php:186 includes/Admin/Settings.php:417
+msgid "Enter a new address"
+msgstr "Saisir une nouvelle adresse"
+
+#: includes/Admin/Settings.php:187
+msgid "Change action"
+msgstr "Action de modification"
+
+#: includes/Admin/Settings.php:187 includes/Admin/Settings.php:419
+#: templates/myaccount/address-book.php:83
+msgid "Change"
+msgstr "Modifier"
+
+#: includes/Admin/Settings.php:193
+msgid "Data removal"
+msgstr "Suppression des données"
+
+#: includes/Admin/Settings.php:194
+msgid "Choose whether customer address-book data and plugin settings should remain after uninstalling Unwan."
+msgstr "Choisissez si les données du carnet d’adresses des clients et les réglages de l’extension doivent être conservés après la désinstallation d’Unwan."
+
+#: includes/Admin/Settings.php:199
+msgid "Uninstall cleanup"
+msgstr "Nettoyage à la désinstallation"
+
+#: includes/Admin/Settings.php:200
+msgid "Permanently remove all Unwan settings and additional customer addresses when the plugin is deleted"
+msgstr "Supprimer définitivement tous les réglages Unwan et les adresses supplémentaires des clients lors de la suppression de l’extension"
+
+#: includes/Admin/Settings.php:201
+msgid "WooCommerce billing and shipping profile addresses are not removed."
+msgstr "Les adresses de facturation et de livraison du profil WooCommerce ne sont pas supprimées."
+
+#. translators: %d: number of saved addresses.
+#. translators: %d: total number of unique addresses.
+#: includes/Admin/Settings.php:407 includes/Admin/Settings.php:409
+#: templates/myaccount/address-book.php:95
+#, php-format
+msgid "%d saved address"
+msgid_plural "%d saved addresses"
+msgstr[0] "%d adresse enregistrée"
+msgstr[1] "%d adresses enregistrées"
+
+#. translators: %d: number of additional saved addresses not currently shown.
+#: includes/Admin/Settings.php:411 includes/Admin/Settings.php:413
+#, php-format
+msgid "%d more saved address"
+msgid_plural "%d more saved addresses"
+msgstr[0] "%d adresse enregistrée de plus"
+msgstr[1] "%d adresses enregistrées de plus"
+
+#: includes/Admin/Settings.php:414
+msgid "Search saved addresses"
+msgstr "Rechercher dans les adresses enregistrées"
+
+#: includes/Admin/Settings.php:416
+msgid "No saved addresses match your search."
+msgstr "Aucune adresse enregistrée ne correspond à votre recherche."
+
+#: includes/Admin/Settings.php:418
+msgid "Default"
+msgstr "Par défaut"
+
+#: includes/Checkout/BlocksController.php:202
+msgid "Selected billing address-book entry."
+msgstr "Entrée du carnet d’adresses sélectionnée pour la facturation."
+
+#: includes/Checkout/BlocksController.php:207
+msgid "Selected shipping address-book entry."
+msgstr "Entrée du carnet d’adresses sélectionnée pour la livraison."
+
+#: includes/Checkout/ClassicCheckout.php:153
+msgid "Please choose a valid saved address."
+msgstr "Veuillez choisir une adresse enregistrée valide."
+
+#: includes/Plugin.php:121
+msgid "Settings"
+msgstr "Réglages"
+
+#: templates/myaccount/address-book.php:56
+msgid "Ships to"
+msgstr "Livré à"
+
+#: templates/myaccount/address-book.php:57
+msgid "Bills to"
+msgstr "Facturé à"
+
+#: templates/myaccount/address-book.php:75
+msgid "No default address"
+msgstr "Aucune adresse par défaut"
+
+#: templates/myaccount/address-book.php:76
+msgid "Add an address and assign this role."
+msgstr "Ajoutez une adresse et attribuez-lui ce rôle."
+
+#: templates/myaccount/address-book.php:83
+msgid "Add"
+msgstr "Ajouter"
+
+#: templates/myaccount/address-book.php:100
+msgid "Defaults first, then recently updated"
+msgstr "Les adresses par défaut d’abord, puis les plus récemment mises à jour"
+
+#: templates/myaccount/address-book.php:171
+msgid "Billing default"
+msgstr "Facturation par défaut"
+
+#: templates/myaccount/address-book.php:172
+msgid "Shipping default"
+msgstr "Livraison par défaut"
+
+#. translators: %s: street address of this address-book entry.
+#: templates/myaccount/address-book.php:187
+#, php-format
+msgid "Actions for %s"
+msgstr "Actions pour %s"
+
+#: templates/myaccount/address-book.php:194
+msgid "Edit"
+msgstr "Modifier"
+
+#: templates/myaccount/address-book.php:207
+msgid "Already the default billing address"
+msgstr "Déjà l’adresse de facturation par défaut"
+
+#: templates/myaccount/address-book.php:207
+msgid "Already the default shipping address"
+msgstr "Déjà l’adresse de livraison par défaut"
+
+#: templates/myaccount/address-book.php:213
+msgid "Make default billing"
+msgstr "Définir comme facturation par défaut"
+
+#: templates/myaccount/address-book.php:214
+msgid "Make default shipping"
+msgstr "Définir comme livraison par défaut"
+
+#: templates/myaccount/address-book.php:225
+msgid "Delete this saved address?"
+msgstr "Supprimer cette adresse enregistrée ?"
+
+#: templates/myaccount/address-book.php:234
+msgid "Change its default roles before deleting this address"
+msgstr "Modifiez ses rôles par défaut avant de supprimer cette adresse"
+
+#: templates/myaccount/address-book.php:237
+msgid "Delete"
+msgstr "Supprimer"
+
+#: templates/myaccount/address-book.php:254
+msgid "You have reached the additional-address limit. Delete an extra address before adding another."
+msgstr "Vous avez atteint la limite d’adresses supplémentaires. Supprimez une adresse supplémentaire avant d’en ajouter une autre."
+
+#: templates/myaccount/address-form.php:43
+msgid "Use this address for"
+msgstr "Utiliser cette adresse pour"
+
+#: templates/myaccount/address-form.php:51
+msgid "Default shipping address"
+msgstr "Adresse de livraison par défaut"
+
+#: templates/myaccount/address-form.php:60
+msgid "Default billing address"
+msgstr "Adresse de facturation par défaut"
+
+#: templates/myaccount/address-form.php:63
+msgid "Leave both unchecked to keep this as an additional address available everywhere at checkout."
+msgstr "Laissez les deux cases décochées pour conserver cette adresse comme adresse supplémentaire disponible partout à la commande."
+
+#. translators: %s: minimum WooCommerce version.
+#: unwan-for-woocommerce.php:87
+#, php-format
+msgid "Unwan requires WooCommerce %s or newer."
+msgstr "Unwan nécessite WooCommerce %s ou une version plus récente."
+
+#: src/blocks/editor.js:26
+msgid "Billing address book"
+msgstr "Carnet d’adresses de facturation"
+
+#: src/blocks/editor.js:27
+msgid "Shipping address book"
+msgstr "Carnet d’adresses de livraison"
+
+#: src/blocks/editor.js:34
+msgid "Signed-in customers can choose a saved address here."
+msgstr "Les clients connectés peuvent choisir ici une adresse enregistrée."

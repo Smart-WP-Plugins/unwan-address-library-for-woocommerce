@@ -2,9 +2,9 @@
 Contributors: smartwpplugins, jeetsaha86
 Tags: woocommerce, address book, multiple addresses, checkout, checkout block
 Requires at least: 6.5
-Tested up to: 7.0.2
+Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires Plugins: woocommerce
@@ -140,6 +140,14 @@ It's kept by default. If you'd rather everything be removed, there's a setting f
 
 == Changelog ==
 
+= 1.0.3 =
+
+* Added translations for ten languages: Spanish, French, German, Italian, Portuguese (Brazil), Dutch, Polish, Russian, Swedish, and Japanese.
+* Fixed the saved-address counts ("2 saved addresses") staying in English at checkout and in My Account.
+* Fixed the "make default" menu actions mixing English into translated text.
+* Tightened how the address book form checks the request method.
+* Verified compatibility with WordPress 7.0 and WooCommerce 11.0.1.
+
 = 1.0.2 =
 
 * Verified compatibility with WordPress 7.0.2 and WooCommerce 11.0.1.
@@ -159,3 +167,7 @@ It's kept by default. If you'd rather everything be removed, there's a setting f
 * General performance improvements.
 
 == Upgrade Notice ==
+
+= 1.0.3 =
+
+Unwan now speaks ten languages, and fixes two places where parts of the address book stayed in English.

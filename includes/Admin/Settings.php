@@ -404,13 +404,13 @@ final class Settings {
 			'billingPanelHeading'    => $this->label( 'unwan_label_billing_panel', __( 'Bill to', 'unwan-for-woocommerce' ) ),
 			'shippingPanelHeading'   => $this->label( 'unwan_label_shipping_panel', __( 'Deliver to', 'unwan-for-woocommerce' ) ),
 			/* translators: %d: number of saved addresses. */
-			'savedAddress'           => __( '%d saved address', 'unwan-for-woocommerce' ),
+			'savedAddress'           => _n( '%d saved address', '%d saved addresses', 1, 'unwan-for-woocommerce' ),
 			/* translators: %d: number of saved addresses. */
-			'savedAddresses'         => __( '%d saved addresses', 'unwan-for-woocommerce' ),
+			'savedAddresses'         => _n( '%d saved address', '%d saved addresses', 2, 'unwan-for-woocommerce' ),
 			/* translators: %d: number of additional saved addresses not currently shown. */
-			'moreAddress'            => __( '%d more saved address', 'unwan-for-woocommerce' ),
+			'moreAddress'            => _n( '%d more saved address', '%d more saved addresses', 1, 'unwan-for-woocommerce' ),
 			/* translators: %d: number of additional saved addresses not currently shown. */
-			'moreAddresses'          => __( '%d more saved addresses', 'unwan-for-woocommerce' ),
+			'moreAddresses'          => _n( '%d more saved address', '%d more saved addresses', 2, 'unwan-for-woocommerce' ),
 			'searchLabel'            => __( 'Search saved addresses', 'unwan-for-woocommerce' ),
 			'searchPlaceholder'      => $this->label( 'unwan_label_search', __( 'Filter by street, city or postcode', 'unwan-for-woocommerce' ) ),
 			'noResults'              => __( 'No saved addresses match your search.', 'unwan-for-woocommerce' ),

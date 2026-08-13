@@ -1,6 +1,6 @@
 {
 	"name": "unwan-for-woocommerce",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"description": "Unwan address management for WooCommerce classic and block checkout.",
 	"author": {
 		"name": "SmartWP Plugins",
@@ -24,6 +24,10 @@
 	"scripts": {
 		"build": "wp-scripts build",
 		"format": "wp-scripts format",
+		"i18n": "npm run i18n:pot && npm run i18n:mo && npm run i18n:json",
+		"i18n:pot": "bash scripts/make-pot.sh",
+		"i18n:mo": "for po in languages/*-*.po; do msgfmt --check -o \"${po%.po}.mo\" \"$po\" || exit 1; done",
+		"i18n:json": "node scripts/make-json.js",
 		"lint:css": "wp-scripts lint-style",
 		"lint:js": "wp-scripts lint-js",
 		"lint:php": "composer run lint:php",
