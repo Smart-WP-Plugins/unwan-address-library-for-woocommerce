@@ -2,9 +2,9 @@
 # This file is distributed under the GPL-2.0-or-later license.
 msgid ""
 msgstr ""
-"Project-Id-Version: Unwan – Multiple Address Book for WooCommerce 1.0.3\n"
+"Project-Id-Version: Unwan – Multiple Address Book for WooCommerce 1.0.4\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/unwan-for-woocommerce/\n"
-"POT-Creation-Date: 2026-08-14 01:35+0530\n"
+"POT-Creation-Date: 2026-08-21 15:04+0530\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"

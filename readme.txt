@@ -2,9 +2,9 @@
 Contributors: smartwpplugins, jeetsaha86
 Tags: woocommerce, address book, multiple addresses, checkout, checkout block
 Requires at least: 6.5
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires Plugins: woocommerce
@@ -140,6 +140,11 @@ It's kept by default. If you'd rather everything be removed, there's a setting f
 
 == Changelog ==
 
+= 1.0.4 =
+
+* Verified compatibility with WordPress 7.1.
+* Added an automated test suite covering address storage, default roles, checkout, and uninstall behaviour. It is development tooling and is not part of the plugin download.
+
 = 1.0.3 =
 
 * Added translations for ten languages: Spanish, French, German, Italian, Portuguese (Brazil), Dutch, Polish, Russian, Swedish, and Japanese.
@@ -167,6 +172,10 @@ It's kept by default. If you'd rather everything be removed, there's a setting f
 * General performance improvements.
 
 == Upgrade Notice ==
+
+= 1.0.4 =
+
+Confirms Unwan works on WordPress 7.1. No changes to your saved addresses or settings.
 
 = 1.0.3 =
 
