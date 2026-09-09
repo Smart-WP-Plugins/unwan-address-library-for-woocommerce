@@ -4,7 +4,7 @@ Tags: woocommerce, address book, multiple addresses, checkout, checkout block
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires Plugins: woocommerce
@@ -140,6 +140,13 @@ It's kept by default. If you'd rather everything be removed, there's a setting f
 
 == Changelog ==
 
+= 1.0.5 =
+
+* Fixed the checkout address form collapsing after every field change when a multi-step checkout extension re-rendered the checkout. Addresses being typed in stayed open only until the next update.
+* Fixed the billing address being overwritten by the shipping address when local pickup was selected, which also collapsed the billing form on every keystroke.
+* Fixed an address entered at checkout not being saved to the address book after a checkout re-render, even though a new address had been chosen.
+* Address fields now stay visible and editable for an address that is not in the address book, instead of having to be cleared and retyped.
+
 = 1.0.4 =
 
 * Verified compatibility with WordPress 7.1.
@@ -172,6 +179,10 @@ It's kept by default. If you'd rather everything be removed, there's a setting f
 * General performance improvements.
 
 == Upgrade Notice ==
+
+= 1.0.5 =
+
+Fixes checkout address entry breaking with local pickup and with multi-step checkout extensions. Recommended for all stores.
 
 = 1.0.4 =
 

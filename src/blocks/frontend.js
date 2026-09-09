@@ -40,6 +40,18 @@ const MATCH_KEYS = [
 const settings = getSetting( 'unwan_data', {} );
 
 /**
+ * Selection state kept outside the React tree, keyed by address type.
+ *
+ * Multi-step checkout extensions can unmount and remount WooCommerce's
+ * checkout blocks while the customer is still filling in an address. Without
+ * this, every remount re-ran initialization against the half-entered address,
+ * resolved it to "custom", and collapsed the fields being typed into.
+ *
+ * @type {Object<string, {selection: string, customOrigin: string, initialized: boolean}>}
+ */
+const selectionState = {};
+
+/**
  * Create the address object WooCommerce expects, with country first so its
  * locale-specific field set is resolved before state is applied.
  *
@@ -260,11 +272,18 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 	const defaultAddress =
 		addresses.find( ( address ) => address.isDefault ) || addresses[ 0 ];
 	const defaultSelection = defaultAddress?.id || 'new';
-	const [ selection, setSelection ] = useState( defaultSelection );
-	const [ customOrigin, setCustomOrigin ] = useState( '' );
+	const persistedState = selectionState[ type ];
+	const [ selection, setSelection ] = useState(
+		() => persistedState?.selection || defaultSelection
+	);
+	const [ customOrigin, setCustomOrigin ] = useState(
+		() => persistedState?.customOrigin || ''
+	);
 	const [ isUpdating, setIsUpdating ] = useState( false );
 	const isMounted = useRef( true );
-	const hasInitializedAddress = useRef( false );
+	const hasInitializedAddress = useRef(
+		Boolean( persistedState?.initialized )
+	);
 	const pickerRef = useRef( null );
 	const { setBillingAddress, setShippingAddress, updateCustomerData } =
 		useDispatch( cartStore );
@@ -272,9 +291,15 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 		useDispatch( checkoutStore );
 	const { clearValidationError } = useDispatch( validationStore );
 	const setExtensionData = checkoutExtensionData?.setExtensionData;
-	const { currentAddress, shippingAddress, useShippingAsBilling } = useSelect(
+	const {
+		currentAddress,
+		shippingAddress,
+		useShippingAsBilling,
+		prefersCollection,
+	} = useSelect(
 		( select ) => {
 			const customerData = select( cartStore ).getCustomerData();
+			const checkout = select( checkoutStore );
 
 			return {
 				currentAddress:
@@ -283,12 +308,18 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 						: customerData.shippingAddress,
 				shippingAddress: customerData.shippingAddress,
 				useShippingAsBilling:
-					select( checkoutStore ).getUseShippingAsBilling?.() ??
-					false,
+					checkout.getUseShippingAsBilling?.() ?? false,
+				prefersCollection: checkout.prefersCollection?.() ?? false,
 			};
 		},
 		[ type ]
 	);
+	// Local pickup takes the shipping address out of the order, so WooCommerce
+	// collects the billing address on its own even though its
+	// "use shipping as billing" flag is still set. Mirroring shipping into
+	// billing here would overwrite and collapse the only address the customer
+	// can still edit, so collection disables the synchronization entirely.
+	const syncBillingToShipping = useShippingAsBilling && ! prefersCollection;
 	const shouldRender =
 		Boolean( settings.isLoggedIn ) &&
 		Boolean( typeSettings.enabled ) &&
@@ -311,7 +342,7 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 		}
 
 		if ( type === 'billing' ) {
-			setEditingBillingAddress( ! useShippingAsBilling );
+			setEditingBillingAddress( ! syncBillingToShipping );
 		} else {
 			setEditingShippingAddress( true );
 		}
@@ -319,8 +350,8 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 		setEditingBillingAddress,
 		setEditingShippingAddress,
 		shouldRender,
+		syncBillingToShipping,
 		type,
-		useShippingAsBilling,
 	] );
 
 	useLayoutEffect( () => {
@@ -336,9 +367,12 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 			return undefined;
 		}
 
+		// Only a saved address stands in for the native fields. "new" and
+		// "custom" are both addresses the customer is entering or correcting,
+		// so the fields have to stay visible and editable for them.
 		checkoutStep.classList.toggle(
 			'unwan-checkout-step--fields-hidden',
-			selection !== 'new'
+			Boolean( addressMap[ selection ] )
 		);
 
 		return () => {
@@ -346,7 +380,7 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 				'unwan-checkout-step--fields-hidden'
 			);
 		};
-	}, [ selection, shouldRender ] );
+	}, [ addressMap, selection, shouldRender ] );
 
 	const buildAddress = useCallback(
 		( nextSelection ) => {
@@ -422,7 +456,7 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 			! shouldRender ||
 			isUpdating ||
 			hasInitializedAddress.current ||
-			( type === 'billing' && useShippingAsBilling )
+			( type === 'billing' && syncBillingToShipping )
 		) {
 			return;
 		}
@@ -459,9 +493,22 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 		defaultSelection,
 		isUpdating,
 		shouldRender,
+		syncBillingToShipping,
 		type,
-		useShippingAsBilling,
 	] );
+
+	// Survive a third-party remount mid-entry (see selectionState).
+	useEffect( () => {
+		if ( ! shouldRender ) {
+			return;
+		}
+
+		selectionState[ type ] = {
+			selection,
+			customOrigin,
+			initialized: hasInitializedAddress.current,
+		};
+	}, [ customOrigin, selection, shouldRender, type ] );
 
 	useEffect( () => {
 		if ( ! shouldRender ) {
@@ -470,7 +517,7 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 
 		let submittedSelection = selection;
 
-		if ( type === 'billing' && useShippingAsBilling ) {
+		if ( type === 'billing' && syncBillingToShipping ) {
 			submittedSelection = '';
 		} else if ( selection === 'custom' ) {
 			submittedSelection = customOrigin === 'edited' ? '' : 'new';
@@ -482,7 +529,7 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 			submittedSelection
 		);
 
-		if ( type === 'shipping' && useShippingAsBilling ) {
+		if ( type === 'shipping' && syncBillingToShipping ) {
 			setExtensionData( NAMESPACE, 'billing_selection', '' );
 		}
 	}, [
@@ -490,13 +537,13 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 		selection,
 		setExtensionData,
 		shouldRender,
+		syncBillingToShipping,
 		type,
-		useShippingAsBilling,
 	] );
 
 	// Enforce shipping-to-billing synchronization and clear hidden errors.
 	useEffect( () => {
-		if ( ! shouldRender || type !== 'billing' || ! useShippingAsBilling ) {
+		if ( ! shouldRender || type !== 'billing' || ! syncBillingToShipping ) {
 			return;
 		}
 
@@ -525,8 +572,8 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 		setEditingBillingAddress,
 		shippingAddress,
 		shouldRender,
+		syncBillingToShipping,
 		type,
-		useShippingAsBilling,
 	] );
 
 	const onSelectionChange = useCallback(

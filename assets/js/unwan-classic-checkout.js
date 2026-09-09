@@ -248,12 +248,14 @@
 		const pickerController = window.unwanAddressPicker.mount( picker );
 
 		/**
-		 * Show native address fields only while a new address is entered.
+		 * Hide the native address fields only while a saved address stands in
+		 * for them. A "new" or "custom" address is one the customer is
+		 * entering or correcting, so its fields stay visible and editable.
 		 * Fields Unwan doesn't manage (billing_email, any third-party
 		 * fields) are left untouched and stay visible/editable throughout.
 		 */
 		function updateFieldVisibility() {
-			$managedFieldRows.toggle( state.mode === 'new' );
+			$managedFieldRows.toggle( state.mode !== 'saved' );
 		}
 
 		/**
