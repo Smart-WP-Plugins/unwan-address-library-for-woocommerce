@@ -4,7 +4,7 @@ Tags: woocommerce, address book, multiple addresses, checkout, checkout block
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.5
+Stable tag: 1.0.6
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires Plugins: woocommerce
@@ -134,11 +134,42 @@ It's not deleted — it just stays in the address book as a regular saved addres
 
 Yes — light, dark, or automatic (matches the customer's device), plus any accent color you like. No design or CSS skills needed.
 
+= Does Unwan save custom checkout fields? =
+
+Unwan is designed to manage the standard WooCommerce address: name, company, address lines, city, state, postcode, country, and phone. That is what it saves, shows, and lets customers edit in My Account.
+
+Unwan keeps one shared address book, where any address can be used for billing, shipping, or both. Fields that checkout field editors add to the billing or shipping address are built around one of those roles, so they stay with your field editor rather than in the address book.
+
+At checkout, those fields appear as usual, handled by WooCommerce and your field editor. Unwan never hides or changes them. The same goes for any other checkout field, such as email, order notes, or additional information fields.
+
 = What happens to my data if I delete the plugin? =
 
 It's kept by default. If you'd rather everything be removed, there's a setting for that under **WooCommerce > Settings > Accounts & Privacy > Unwan**. Either way, your customers' regular WooCommerce billing and shipping details are never touched.
 
 == Changelog ==
+
+= 1.0.6 =
+
+* Fixed checkout getting stuck when the store requires a field, such as phone or company, that a saved address doesn't have. The field now appears so the customer can fill it in.
+* Fixed every address field reappearing after a failed payment while a saved address was still selected.
+* Fixed fields added by checkout field editors disappearing at checkout when a saved address was selected.
+* Fixed classic checkout refusing orders with "Please choose a valid saved address" on checkout pages built with page builders, alongside another address-book plugin, and for customers with no saved addresses.
+* Fixed orders for virtual or downloadable products replacing the customer's default shipping address.
+* Fixed the chosen billing address switching back on checkouts that need no shipping or that ship to the billing address.
+* Fixed the order using a different address from the one shown after switching between delivery and local pickup.
+* Fixed "Use same address for billing" billing the previous address after a saved delivery address was chosen.
+* Fixed shipping rates and taxes being worked out for the default address after another saved address was chosen.
+* Fixed "Make the new address the matching default" losing the previous default at block checkout, and doing nothing once the address limit was reached.
+* Fixed saving an address in My Account wiping fields the form doesn't show, such as a company or apartment hidden by a field editor.
+* Fixed removing every default role from an address deleting it when the address limit was full.
+* Fixed classic checkout not saving a changed billing email, or custom fields from checkout field editors, to the customer's account.
+* Fixed turning off one checkout selector stopping WooCommerce from updating that address.
+* Fixed choosing "Enter a new address" a second time clearing what had been typed.
+* Fixed classic checkout showing a mix of two addresses after the page was reloaded.
+* The chosen address is now kept when the checkout page is reloaded or revisited.
+* An address that isn't in the address book now shows as "Enter a new address" with its fields open, instead of a closed summary above open fields.
+* Saved addresses are now included in WordPress's personal data export and erasure tools.
+* The My Account address form now shows only the fields Unwan saves.
 
 = 1.0.5 =
 
@@ -179,6 +210,10 @@ It's kept by default. If you'd rather everything be removed, there's a setting f
 * General performance improvements.
 
 == Upgrade Notice ==
+
+= 1.0.6 =
+
+Fixes checkout problems with checkout field editors, failed payments, local pickup and virtual products, and keeps saved addresses from being lost. Recommended for all stores.
 
 = 1.0.5 =
 

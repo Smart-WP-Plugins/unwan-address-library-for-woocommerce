@@ -30,6 +30,40 @@
 		'postcode',
 	];
 	const fieldKeys = Array.isArray( config.fieldKeys ) ? config.fieldKeys : [];
+	const STORAGE_PREFIX = 'unwan-selection-';
+
+	/**
+	 * The customer's choice for an address type in this browser tab. Only an
+	 * address ID or "new" is stored, never address data.
+	 *
+	 * @param {string} type Address type.
+	 * @return {string} Stored choice, or ''.
+	 */
+	function readStoredSelection( type ) {
+		try {
+			return window.sessionStorage.getItem( STORAGE_PREFIX + type ) || '';
+		} catch ( error ) {
+			return '';
+		}
+	}
+
+	/**
+	 * Remember (or forget, with an empty value) the customer's choice.
+	 *
+	 * @param {string} type  Address type.
+	 * @param {string} value Address ID, "new", or ''.
+	 */
+	function storeSelection( type, value ) {
+		try {
+			if ( value ) {
+				window.sessionStorage.setItem( STORAGE_PREFIX + type, value );
+			} else {
+				window.sessionStorage.removeItem( STORAGE_PREFIX + type );
+			}
+		} catch ( error ) {
+			// Remembering the choice across a reload is a convenience only.
+		}
+	}
 
 	/**
 	 * Normalize a field value for address comparisons.
@@ -209,7 +243,18 @@
 			map[ address.id ] = address;
 			return map;
 		}, {} );
-		const $selection = $( '#unwan_' + type + '_address_id' );
+		let $selection = $( '#unwan_' + type + '_address_id' );
+
+		// Checkout templates that print only their own fields leave out the
+		// hidden selection input. The picker is on the page, so add the input
+		// to the form; otherwise the customer's choice would not be posted.
+		if ( ! $selection.length ) {
+			$selection = $( '<input>', {
+				type: 'hidden',
+				id: 'unwan_' + type + '_address_id',
+				name: 'unwan_' + type + '_address_id',
+			} ).appendTo( $mount.closest( 'form' ) );
+		}
 		// Toggle only the rows Unwan actually manages (fieldKeys never
 		// includes "email" — see AddressRepository::FIELD_KEYS). Toggling the
 		// whole fieldset wrapper instead would also hide billing_email, and
@@ -225,20 +270,48 @@
 				.join( ',' )
 		);
 		const currentFields = readFields( type );
-		const matchingAddress = addresses.find( function ( address ) {
-			return addressesMatch( currentFields, address.fields || {} );
-		} );
+		// WooCommerce's classic checkout keeps only the street, city,
+		// postcode, state and country between page loads, not the name,
+		// company or phone. After a reload the form can therefore hold a mix
+		// of two addresses, so the customer's remembered choice wins.
+		const storedSelection = readStoredSelection( type );
+		const storedAddress = addressMap[ storedSelection ] || null;
+		const matchingAddress =
+			storedAddress &&
+			addressesMatch( currentFields, storedAddress.fields || {} )
+				? storedAddress
+				: addresses.find( function ( address ) {
+						return addressesMatch(
+							currentFields,
+							address.fields || {}
+						);
+				  } );
 		const defaultAddress =
 			addresses.find( function ( address ) {
 				return address.isDefault;
 			} ) || addresses[ 0 ];
+		let initialMode = 'saved';
+		if ( storedSelection === 'new' ) {
+			initialMode = 'new';
+		} else if (
+			! storedAddress &&
+			! matchingAddress &&
+			hasAddress( currentFields )
+		) {
+			initialMode = 'custom';
+		}
 		const state = {
-			mode:
-				! matchingAddress && hasAddress( currentFields )
-					? 'custom'
-					: 'saved',
-			selection: matchingAddress?.id || defaultAddress.id,
+			mode: initialMode,
+			selection:
+				( initialMode === 'new' && 'new' ) ||
+				storedAddress?.id ||
+				matchingAddress?.id ||
+				defaultAddress.id,
 			isApplying: false,
+			// Rows revealed because WooCommerce reports them required-but-empty
+			// or invalid for the selected saved address. Only a new choice in
+			// the picker clears them, so a row never collapses while typing.
+			revealed: {},
 		};
 		const picker = document.createElement( 'div' );
 		picker.id = 'unwan-' + type + '-picker';
@@ -248,14 +321,69 @@
 		const pickerController = window.unwanAddressPicker.mount( picker );
 
 		/**
-		 * Hide the native address fields only while a saved address stands in
-		 * for them. A "new" or "custom" address is one the customer is
-		 * entering or correcting, so its fields stay visible and editable.
-		 * Fields Unwan doesn't manage (billing_email, any third-party
-		 * fields) are left untouched and stay visible/editable throughout.
+		 * Whether WooCommerce needs the customer to look at a managed row: a
+		 * required field the saved address leaves empty (a field editor or
+		 * WooCommerce may have made phone or company required), or a field
+		 * WooCommerce marked invalid. "Required" comes from the row's class or
+		 * from the checkout field configuration the server sends, because the
+		 * class can be missing for a while after the page loads.
+		 *
+		 * @param {HTMLElement} row Field row.
+		 * @return {boolean} Whether the row must stay visible.
+		 */
+		function needsAttention( row ) {
+			// WooCommerce hides some rows for the selected country itself.
+			if ( row.style.display === 'none' ) {
+				return false;
+			}
+
+			const $row = $( row );
+			if ( $row.hasClass( 'woocommerce-invalid' ) ) {
+				return true;
+			}
+
+			const key = row.id.slice( type.length + 1, -'_field'.length );
+			const requiredKeys = config.requiredKeys?.[ type ] || [];
+			if (
+				! $row.hasClass( 'validate-required' ) &&
+				requiredKeys.indexOf( key ) === -1
+			) {
+				return false;
+			}
+
+			const $control = $row
+				.find( 'input, select, textarea' )
+				.not( '[type="hidden"]' )
+				.first();
+
+			return (
+				$control.length > 0 &&
+				String( $control.val() || '' ).trim() === ''
+			);
+		}
+
+		/**
+		 * Collapse the native address rows only while a saved address stands
+		 * in for them, and never a row that needs the customer. A "new" or
+		 * "custom" address keeps every row visible.
+		 *
+		 * A class is used rather than inline display, so WooCommerce's own
+		 * per-country show/hide of rows keeps working. Fields Unwan doesn't
+		 * manage (billing_email, any third-party fields) are never touched.
 		 */
 		function updateFieldVisibility() {
-			$managedFieldRows.toggle( state.mode !== 'saved' );
+			const collapse = state.mode === 'saved';
+
+			$managedFieldRows.each( function () {
+				if ( collapse && needsAttention( this ) ) {
+					state.revealed[ this.id ] = true;
+				}
+
+				$( this ).toggleClass(
+					'unwan-checkout__field--collapsed',
+					collapse && ! state.revealed[ this.id ]
+				);
+			} );
 		}
 
 		/**
@@ -308,10 +436,17 @@
 		 */
 		function render() {
 			updateHiddenSelection();
+			storeSelection(
+				type,
+				state.mode === 'saved' ? state.selection : 'new'
+			);
 			pickerController.update( {
 				type,
 				addresses,
-				selection: state.mode === 'custom' ? 'custom' : state.selection,
+				// An address that isn't in the book is edited in the open
+				// fields, so the picker shows "Enter a new address" as the
+				// choice rather than a collapsed summary above open fields.
+				selection: state.mode === 'saved' ? state.selection : 'new',
 				summary: getSummary(),
 				disabled: state.isApplying,
 				searchThreshold: config.searchThreshold ?? 4,
@@ -323,6 +458,13 @@
 		picker.addEventListener( 'unwan-selection-change', function ( event ) {
 			const nextSelection = String( event.detail?.value || '' );
 
+			// Choosing "Enter a new address" again must not clear what the
+			// customer has already typed.
+			if ( nextSelection === 'new' && state.mode !== 'saved' ) {
+				render();
+				return;
+			}
+
 			if ( nextSelection === 'new' ) {
 				state.mode = 'new';
 				state.selection = 'new';
@@ -333,13 +475,65 @@
 				return;
 			}
 
+			state.revealed = {};
 			applySelection( nextSelection );
 			render();
 		} );
 
-		if ( ! matchingAddress && ! hasAddress( currentFields ) ) {
+		// Re-check whenever a managed row's classes change. WooCommerce's
+		// country rules, its validation, and field editors all mark rows
+		// required or invalid through classes, some of them only after a
+		// delay (ThemeHigh re-applies "required" after updated_checkout).
+		// Toggling Unwan's own class only writes the attribute when it really
+		// changes, so this settles after one extra pass.
+		if ( typeof window.MutationObserver === 'function' ) {
+			const rowObserver = new window.MutationObserver( function () {
+				// Applying a saved address sets the country before the state,
+				// so WooCommerce briefly rebuilds an empty state field.
+				// render() checks the rows once every value is in place.
+				if ( ! state.isApplying ) {
+					updateFieldVisibility();
+				}
+			} );
+
+			$managedFieldRows.each( function () {
+				rowObserver.observe( this, {
+					attributes: true,
+					attributeFilter: [ 'class' ],
+				} );
+			} );
+		}
+
+		// A rejected order marks fields invalid; reveal them.
+		$( document.body ).on( 'checkout_error', function () {
+			if ( ! state.isApplying ) {
+				updateFieldVisibility();
+			}
+		} );
+
+		// Another script can blank the hidden input (it sits inside
+		// WooCommerce's field wrapper). Write it again right before submit.
+		$mount.closest( 'form' ).on( 'checkout_place_order', function () {
+			updateHiddenSelection();
+		} );
+
+		if ( storedAddress && storedAddress !== matchingAddress ) {
+			// Fill in what WooCommerce forgot on reload (name, company, phone).
+			applySelection( storedAddress.id );
+		} else if (
+			initialMode === 'saved' &&
+			! matchingAddress &&
+			! hasAddress( currentFields )
+		) {
 			applySelection( defaultAddress.id );
 		}
+
+		// A placed order ends this choice; the next checkout starts fresh.
+		$mount
+			.closest( 'form' )
+			.on( 'checkout_place_order_success', function () {
+				storeSelection( type, '' );
+			} );
 
 		render();
 	}

@@ -401,4 +401,74 @@ class AddressRepositoryRoleTest extends UnwanTestCase {
 		$this->assertFalse( $this->repository->can_add( $this->user_id ) );
 		$this->assertSame( $id, $this->repository->create( $this->user_id, $this->address() ) );
 	}
+
+	/**
+	 * Dropping every role from a default while the additional-address limit is
+	 * full must keep the address: a role change never deletes an address.
+	 */
+	public function test_dropping_every_role_at_the_limit_keeps_the_address(): void {
+		update_option( 'unwan_address_save_limit', 1 );
+
+		$this->repository->save_primary( $this->user_id, 'billing', $this->address() );
+		$this->repository->create( $this->user_id, $this->other_address() );
+
+		$result = $this->repository->save_entry( $this->user_id, 'default_billing', $this->address(), array() );
+
+		$this->assertIsString( $result, 'No limit error' );
+
+		$names = array_map(
+			static function ( $record ) {
+				return $record['fields']['first_name'];
+			},
+			array_values( $this->repository->get_saved( $this->user_id ) )
+		);
+		sort( $names );
+
+		$this->assertSame( array( 'Ada', 'Grace' ), $names );
+	}
+
+	/**
+	 * Fields the editor did not render keep their stored values, for an extra
+	 * and for each default role an entry holds.
+	 */
+	public function test_save_entry_keeps_fields_the_editor_did_not_render(): void {
+		$rendered = array( 'first_name', 'last_name', 'country', 'address_1', 'city', 'state', 'postcode', 'phone' );
+
+		$id = $this->repository->create( $this->user_id, $this->address() );
+		$this->repository->save_entry(
+			$this->user_id,
+			$id,
+			$this->address( array( 'company' => '', 'address_2' => '', 'phone' => '5550199' ) ),
+			array(),
+			$rendered
+		);
+
+		$saved = $this->repository->get_saved( $this->user_id )[ $id ]['fields'];
+		$this->assertSame( 'Analytical Engines', $saved['company'], 'Extra keeps its company' );
+		$this->assertSame( 'Apt 4', $saved['address_2'], 'Extra keeps its apartment' );
+		$this->assertSame( '5550199', $saved['phone'], 'Rendered fields still change' );
+
+		$this->repository->save_primary( $this->user_id, 'shipping', $this->address( array( 'address_2' => 'Suite 300' ) ) );
+		$this->repository->save_entry(
+			$this->user_id,
+			'default_shipping',
+			$this->address( array( 'company' => '', 'address_2' => '' ) ),
+			array( 'shipping' ),
+			$rendered
+		);
+
+		$shipping = $this->repository->get_primary( $this->user_id, 'shipping' );
+		$this->assertSame( 'Suite 300', $shipping['address_2'], 'Default keeps its own apartment' );
+		$this->assertSame( 'Analytical Engines', $shipping['company'] );
+	}
+
+	/**
+	 * Without a rendered-field list every field is taken from the submission.
+	 */
+	public function test_save_entry_without_a_rendered_list_replaces_every_field(): void {
+		$id = $this->repository->create( $this->user_id, $this->address() );
+		$this->repository->save_entry( $this->user_id, $id, $this->address( array( 'company' => '' ) ), array() );
+
+		$this->assertSame( '', $this->repository->get_saved( $this->user_id )[ $id ]['fields']['company'] );
+	}
 }

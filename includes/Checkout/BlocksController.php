@@ -111,12 +111,6 @@ final class BlocksController {
 			2
 		);
 		add_action(
-			'woocommerce_store_api_cart_update_customer_from_request',
-			array( $this, 'handle_cart_customer_update' ),
-			20,
-			2
-		);
-		add_action(
 			'woocommerce_store_api_checkout_order_processed',
 			array( $this, 'capture_processed_order_addresses' ),
 			20,
@@ -225,7 +219,7 @@ final class BlocksController {
 	 */
 	public function handle_customer_update( \WC_Customer $customer, \WP_REST_Request $request ): void {
 		$this->capture_new_address_selections( $customer, $request );
-		$this->capture_customer_defaults( $customer, $request );
+		$this->capture_customer_defaults( $customer );
 	}
 
 	/**
@@ -276,6 +270,13 @@ final class BlocksController {
 		$this->pending_new_customer_id = $user_id;
 
 		foreach ( array_keys( $this->pending_new_address_types ) as $type ) {
+			// Local pickup and carts that need no shipping send the billing
+			// address as the shipping address. A shipping selection left over
+			// from before the customer switched must not save it as one.
+			if ( 'shipping' === $type && ! $order->needs_shipping_address() ) {
+				continue;
+			}
+
 			$address = $this->repository->sanitize_fields( (array) $order->get_address( $type ) );
 
 			if ( $this->repository->has_address( $address ) ) {
@@ -287,25 +288,21 @@ final class BlocksController {
 	}
 
 	/**
-	 * Capture defaults before the cart/update-customer route persists a
-	 * selector-driven address update.
+	 * Snapshot the persisted defaults before WooCommerce syncs the order into
+	 * the customer profile.
 	 *
-	 * @param \WC_Customer     $customer Customer being updated.
-	 * @param \WP_REST_Request $request  Cart customer request.
+	 * Every default is captured, whatever the request contains: WooCommerce
+	 * also writes the profile for carts that need no shipping (copying the
+	 * billing address into shipping) and for orders placed without Unwan's
+	 * interface. The restore only writes back what actually changed. In
+	 * update mode the old default is restored first and the new address is
+	 * then promoted through make_primary(), which keeps the old one in the
+	 * book.
+	 *
+	 * @param \WC_Customer $customer Customer being updated.
 	 * @return void
 	 */
-	public function handle_cart_customer_update( \WC_Customer $customer, \WP_REST_Request $request ): void {
-		$this->capture_customer_defaults( $customer, $request );
-	}
-
-	/**
-	 * Capture persisted defaults for any submitted address that differs.
-	 *
-	 * @param \WC_Customer     $customer Customer being updated.
-	 * @param \WP_REST_Request $request  Store API request.
-	 * @return void
-	 */
-	private function capture_customer_defaults( \WC_Customer $customer, \WP_REST_Request $request ): void {
+	private function capture_customer_defaults( \WC_Customer $customer ): void {
 		$user_id = $customer->get_id();
 		if ( $user_id <= 0 ) {
 			return;
@@ -318,30 +315,10 @@ final class BlocksController {
 				continue;
 			}
 
-			if (
-				$this->settings->should_update_checkout_default()
-				&& ! empty( $this->pending_new_address_types[ $type ] )
-			) {
-				continue;
-			}
+			$snapshot = $this->repository->snapshot_primary( $user_id, $type );
 
-			if ( 'shipping' === $type && ( ! isset( WC()->cart ) || ! WC()->cart->needs_shipping() ) ) {
-				continue;
-			}
-
-			$param = "{$type}_address";
-			if ( ! $request->has_param( $param ) ) {
-				continue;
-			}
-
-			$address = (array) $request->get_param( $param );
-			$primary = $this->repository->get_persisted_primary( $user_id, $type );
-
-			if (
-				$this->repository->has_address( $primary )
-				&& ! $this->addresses_match( $primary, $address )
-			) {
-				$this->pending_primary_restores[ $type ] = $primary;
+			if ( $this->repository->has_address( $snapshot ) ) {
+				$this->pending_primary_restores[ $type ] = $snapshot;
 			}
 		}
 	}
@@ -386,25 +363,10 @@ final class BlocksController {
 			return;
 		}
 
-		// Use a separate object so the Store API session can keep the selected
-		// order-specific address while only the persisted account default is
-		// restored.
-		$customer = new \WC_Customer( $this->pending_customer_id );
-
-		foreach ( $this->pending_primary_restores as $type => $fields ) {
-			foreach ( $this->repository->get_field_keys() as $key ) {
-				$value  = (string) ( $fields[ $key ] ?? '' );
-				$setter = "set_{$type}_{$key}";
-
-				if ( is_callable( array( $customer, $setter ) ) ) {
-					$customer->{$setter}( $value );
-				} else {
-					$customer->update_meta_data( "{$type}_{$key}", $value );
-				}
-			}
-		}
-
-		$customer->save();
+		// The repository writes a separate DB-backed customer, so the Store API
+		// session keeps the order-specific address while only the account
+		// default is restored, and only where WooCommerce changed it.
+		$this->repository->restore_primaries( $this->pending_customer_id, $this->pending_primary_restores );
 
 		$this->pending_primary_restores = array();
 		$this->pending_customer_id      = 0;
@@ -429,7 +391,15 @@ final class BlocksController {
 				$address
 			);
 
-			if ( $this->settings->should_update_checkout_default() && ! is_wp_error( $id ) ) {
+			if ( ! $this->settings->should_update_checkout_default() ) {
+				continue;
+			}
+
+			if ( is_wp_error( $id ) ) {
+				// The extra-address limit is full. Promoting is still a swap, so
+				// the displaced default is kept and the new address becomes it.
+				$this->repository->promote_address( $this->pending_new_customer_id, (string) $type, $address );
+			} else {
 				$this->repository->make_primary(
 					$this->pending_new_customer_id,
 					(string) $type,
@@ -441,34 +411,5 @@ final class BlocksController {
 		$this->pending_new_addresses     = array();
 		$this->pending_new_customer_id   = 0;
 		$this->pending_new_address_types = array();
-	}
-
-	/**
-	 * Compare the postal parts of two request addresses.
-	 *
-	 * @param array<string,mixed> $first  First address.
-	 * @param array<string,mixed> $second Second address.
-	 * @return bool
-	 */
-	private function addresses_match( array $first, array $second ): bool {
-		$keys = array(
-			'first_name',
-			'last_name',
-			'company',
-			'country',
-			'address_1',
-			'address_2',
-			'city',
-			'state',
-			'postcode',
-		);
-
-		foreach ( $keys as $key ) {
-			if ( (string) ( $first[ $key ] ?? '' ) !== (string) ( $second[ $key ] ?? '' ) ) {
-				return false;
-			}
-		}
-
-		return true;
 	}
 }

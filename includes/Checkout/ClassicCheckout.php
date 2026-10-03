@@ -53,7 +53,7 @@ final class ClassicCheckout {
 		add_action( 'woocommerce_before_checkout_billing_form', array( $this, 'render_billing_selector' ) );
 		add_action( 'woocommerce_before_checkout_shipping_form', array( $this, 'render_shipping_selector' ) );
 		add_action( 'woocommerce_after_checkout_validation', array( $this, 'validate_selection' ), 10, 2 );
-		add_filter( 'woocommerce_checkout_update_customer_data', array( $this, 'control_customer_update' ), 20 );
+		add_action( 'woocommerce_checkout_update_customer', array( $this, 'keep_customer_defaults' ), 20, 2 );
 		add_action( 'woocommerce_checkout_update_user_meta', array( $this, 'save_checkout_choices' ), 20, 2 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 	}
@@ -137,17 +137,26 @@ final class ClassicCheckout {
 				continue;
 			}
 
-			$key       = "unwan_{$type}_address_id";
-			$selection = sanitize_key( (string) ( $data[ $key ] ?? '' ) );
-
-			if ( 'new' === $selection ) {
+			// add_fields() registers a selector only for a customer who has
+			// saved addresses. With an empty book there is no selector and so
+			// nothing to validate; requiring a selection would block the order.
+			if ( empty( $this->repository->get_checkout_options( $user_id, $type ) ) ) {
 				continue;
 			}
 
-			if (
-				'' === $selection
-				|| ! $this->repository->checkout_option_exists( $user_id, $type, $selection )
-			) {
+			$key       = "unwan_{$type}_address_id";
+			$selection = sanitize_key( (string) ( $data[ $key ] ?? '' ) );
+
+			// An empty value means Unwan's picker did not take part: checkout
+			// templates and builders that print only their own fields never
+			// post it, and other scripts can blank it. That is not an invalid
+			// choice, and rejecting it would block every order. Only a value
+			// that names an address the customer does not own is rejected.
+			if ( '' === $selection || 'new' === $selection ) {
+				continue;
+			}
+
+			if ( ! $this->repository->checkout_option_exists( $user_id, $type, $selection ) ) {
 				$errors->add(
 					'unwan_invalid_address',
 					__( 'Please choose a valid saved address.', 'unwan-for-woocommerce' )
@@ -157,23 +166,64 @@ final class ClassicCheckout {
 	}
 
 	/**
-	 * Prevent WooCommerce from overwriting defaults; this class persists only
-	 * the address types the shopper explicitly selected as default.
+	 * Keep the account's address defaults when the customer used the picker.
 	 *
-	 * @param bool $should_update WooCommerce's original decision.
-	 * @return bool
+	 * WooCommerce copies the order's addresses into the customer profile.
+	 * Choosing an address for one order must not replace the defaults, so the
+	 * address fields of each managed type are put back to their stored values
+	 * just before WooCommerce saves. Everything else WooCommerce saves as
+	 * usual: the billing email, custom billing_/shipping_ fields from field
+	 * editors, and anything third parties set on this hook. A type whose
+	 * selector is off, or whose default is still empty, is left to
+	 * WooCommerce.
+	 *
+	 * @param \WC_Customer        $customer Customer about to be saved.
+	 * @param array<string,mixed> $data     Parsed checkout data.
+	 * @return void
 	 */
-	public function control_customer_update( bool $should_update ): bool {
-		if ( ! is_user_logged_in() ) {
-			return $should_update;
+	public function keep_customer_defaults( $customer, $data ): void {
+		if ( ! $customer instanceof \WC_Customer || ! is_user_logged_in() || ! is_array( $data ) ) {
+			return;
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Runs inside WooCommerce's own checkout submission, which WooCommerce has already nonce-verified by this point; this only reads which selector fields are present.
-		if ( isset( $_POST['unwan_billing_address_id'] ) || isset( $_POST['unwan_shipping_address_id'] ) ) {
-			return false;
+		$user_id = $customer->get_id();
+		if ( $user_id <= 0 || get_current_user_id() !== $user_id ) {
+			return;
 		}
 
-		return $should_update;
+		// Only a selection the picker actually posted takes over from
+		// WooCommerce. An empty value means the picker was not used (see
+		// validate_selection()), so WooCommerce keeps its normal behaviour.
+		$picker_used = false;
+		foreach ( array( 'billing', 'shipping' ) as $type ) {
+			if ( '' !== sanitize_key( (string) ( $data[ "unwan_{$type}_address_id" ] ?? '' ) ) ) {
+				$picker_used = true;
+			}
+		}
+
+		if ( ! $picker_used ) {
+			return;
+		}
+
+		foreach ( array( 'billing', 'shipping' ) as $type ) {
+			if ( ! $this->settings->is_enabled( $type ) ) {
+				continue;
+			}
+
+			$stored = $this->repository->snapshot_primary( $user_id, $type );
+			if ( ! $this->repository->has_address( $stored ) ) {
+				continue;
+			}
+
+			foreach ( $stored as $key => $value ) {
+				$setter = "set_{$type}_{$key}";
+				if ( is_callable( array( $customer, $setter ) ) ) {
+					$customer->{$setter}( $value );
+				} else {
+					$customer->update_meta_data( "{$type}_{$key}", $value );
+				}
+			}
+		}
 	}
 
 	/**
@@ -189,7 +239,6 @@ final class ClassicCheckout {
 		}
 
 		if ( ! $this->settings->should_save_checkout_addresses() ) {
-			$this->sync_customer_name( $user_id, $data );
 			return;
 		}
 
@@ -211,12 +260,18 @@ final class ClassicCheckout {
 
 			$id = $this->repository->create( $user_id, $fields );
 
-			if ( $this->settings->should_update_checkout_default() && ! is_wp_error( $id ) ) {
+			if ( ! $this->settings->should_update_checkout_default() ) {
+				continue;
+			}
+
+			if ( is_wp_error( $id ) ) {
+				// The extra-address limit is full. Promoting is still a swap, so
+				// the displaced default is kept and the new address becomes it.
+				$this->repository->promote_address( $user_id, $type, $fields );
+			} else {
 				$this->repository->make_primary( $user_id, $type, (string) $id );
 			}
 		}
-
-		$this->sync_customer_name( $user_id, $data );
 	}
 
 	/**
@@ -234,6 +289,7 @@ final class ClassicCheckout {
 		$data    = array(
 			'types'           => array(),
 			'fieldKeys'       => $this->repository->get_field_keys(),
+			'requiredKeys'    => $this->get_required_keys(),
 			'baseCountry'     => WC()->countries->get_base_country(),
 			'searchThreshold' => $this->settings->get_address_search_threshold(),
 			'labels'          => $this->settings->get_checkout_picker_labels(),
@@ -333,26 +389,37 @@ final class ClassicCheckout {
 	}
 
 	/**
-	 * Populate the WordPress profile name when it is still empty.
+	 * Managed address fields the checkout requires, per address type.
 	 *
-	 * @param int                 $user_id Customer ID.
-	 * @param array<string,mixed> $data    Checkout data.
-	 * @return void
+	 * This is WooCommerce's own checkout field configuration, including field
+	 * editors' overrides, which is what the order is validated against. The
+	 * required class on the page is not reliable on its own: WooCommerce's
+	 * country rules remove it from some fields on load and a field editor may
+	 * only add it back after a later checkout update.
+	 *
+	 * @return array<string,string[]>
 	 */
-	private function sync_customer_name( int $user_id, array $data ): void {
-		$customer = new \WC_Customer( $user_id );
+	private function get_required_keys(): array {
+		$required = array(
+			'billing'  => array(),
+			'shipping' => array(),
+		);
 
-		if ( '' === $customer->get_first_name() && ! empty( $data['billing_first_name'] ) ) {
-			$customer->set_first_name( sanitize_text_field( (string) $data['billing_first_name'] ) );
-		}
-		if ( '' === $customer->get_last_name() && ! empty( $data['billing_last_name'] ) ) {
-			$customer->set_last_name( sanitize_text_field( (string) $data['billing_last_name'] ) );
-		}
-		if ( is_email( $customer->get_display_name() ) ) {
-			$customer->set_display_name( trim( $customer->get_first_name() . ' ' . $customer->get_last_name() ) );
+		if ( ! function_exists( 'WC' ) || ! WC()->checkout() ) {
+			return $required;
 		}
 
-		$customer->save();
+		foreach ( array_keys( $required ) as $type ) {
+			$fields = (array) WC()->checkout()->get_checkout_fields( $type );
+
+			foreach ( $this->repository->get_field_keys() as $key ) {
+				if ( ! empty( $fields[ "{$type}_{$key}" ]['required'] ) ) {
+					$required[ $type ][] = $key;
+				}
+			}
+		}
+
+		return $required;
 	}
 
 	/**

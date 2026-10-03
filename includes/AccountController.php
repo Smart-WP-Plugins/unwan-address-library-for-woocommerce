@@ -291,7 +291,13 @@ final class AccountController {
 			$this->redirect( $id );
 		}
 
-		$result = $this->repository->save_entry( $user_id, $id, $values, $roles );
+		// Fields the form did not render keep their stored values.
+		$rendered = array();
+		foreach ( array_keys( $fields ) as $key ) {
+			$rendered[] = substr( $key, strlen( 'billing_' ) );
+		}
+
+		$result = $this->repository->save_entry( $user_id, $id, $values, $roles, $rendered );
 
 		if ( is_wp_error( $result ) ) {
 			wc_add_notice( $result->get_error_message(), 'error' );
@@ -354,10 +360,22 @@ final class AccountController {
 	 */
 	public function get_form_fields( string $country ): array {
 		$fields = WC()->countries->get_address_fields( $country, 'billing_' );
+		$keys   = $this->repository->get_field_keys();
+		$form   = array();
 
-		unset( $fields['billing_email'] );
+		// Render only the fields the repository stores. Other plugins add
+		// registration and checkout fields through the same WooCommerce
+		// billing filters; shown here they would never be saved, and a
+		// required one would block every address from saving. Developers who
+		// want an extra field in the address book add its key through the
+		// unwan_address_field_keys filter, which also makes it persist.
+		foreach ( $fields as $key => $field ) {
+			if ( in_array( substr( $key, strlen( 'billing_' ) ), $keys, true ) ) {
+				$form[ $key ] = $field;
+			}
+		}
 
-		return $fields;
+		return $form;
 	}
 
 	/**

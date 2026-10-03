@@ -226,6 +226,64 @@ class AccountRenderingTest extends UnwanTestCase {
 	}
 
 	/**
+	 * Registration and checkout fields other plugins add through WooCommerce's
+	 * billing filters are not stored, so the address book does not show them.
+	 */
+	public function test_fields_added_by_other_plugins_are_left_out(): void {
+		add_filter(
+			'woocommerce_billing_fields',
+			static function ( $fields ) {
+				$fields['billing_registration_source'] = array(
+					'label'    => 'How did you hear about us?',
+					'required' => true,
+				);
+
+				return $fields;
+			}
+		);
+		add_filter(
+			'woocommerce_default_address_fields',
+			static function ( $fields ) {
+				$fields['door_code'] = array( 'label' => 'Door code' );
+
+				return $fields;
+			}
+		);
+
+		$fields = $this->controller->get_form_fields( 'US' );
+
+		$this->assertArrayNotHasKey( 'billing_registration_source', $fields );
+		$this->assertArrayNotHasKey( 'billing_door_code', $fields );
+		$this->assertArrayHasKey( 'billing_first_name', $fields );
+		$this->assertArrayHasKey( 'billing_postcode', $fields );
+	}
+
+	/**
+	 * A field a developer opts in through unwan_address_field_keys is shown,
+	 * because the same filter makes the repository store it.
+	 */
+	public function test_a_field_opted_in_through_the_filter_is_kept(): void {
+		add_filter(
+			'woocommerce_default_address_fields',
+			static function ( $fields ) {
+				$fields['door_code'] = array( 'label' => 'Door code' );
+
+				return $fields;
+			}
+		);
+		add_filter(
+			'unwan_address_field_keys',
+			static function ( $keys ) {
+				$keys[] = 'door_code';
+
+				return $keys;
+			}
+		);
+
+		$this->assertArrayHasKey( 'billing_door_code', $this->controller->get_form_fields( 'US' ) );
+	}
+
+	/**
 	 * Endpoint URLs carry only sanitized query arguments.
 	 */
 	public function test_endpoint_urls_carry_sanitized_arguments(): void {

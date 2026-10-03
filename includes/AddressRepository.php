@@ -245,6 +245,70 @@ final class AddressRepository {
 	}
 
 	/**
+	 * Read a profile default exactly as stored, for a later restore.
+	 *
+	 * @param int    $user_id Customer ID.
+	 * @param string $type    Billing or shipping.
+	 * @return array<string,string>
+	 */
+	public function snapshot_primary( int $user_id, string $type ): array {
+		$type   = $this->normalize_type( $type );
+		$fields = array();
+
+		foreach ( $this->get_field_keys() as $key ) {
+			$fields[ $key ] = (string) get_user_meta( $user_id, "{$type}_{$key}", true );
+		}
+
+		return $fields;
+	}
+
+	/**
+	 * Write snapshotted profile defaults back, touching only what changed.
+	 *
+	 * Saving an unchanged customer still runs wp_update_user(), which bumps
+	 * last_update and makes WooCommerce discard the session's customer data
+	 * on the next request. Nothing is saved when nothing changed.
+	 *
+	 * @param int                                $user_id  Customer ID.
+	 * @param array<string,array<string,string>> $defaults Snapshots keyed by type.
+	 * @return bool Whether the profile was saved.
+	 */
+	public function restore_primaries( int $user_id, array $defaults ): bool {
+		$customer = new \WC_Customer( $user_id );
+		$changed  = false;
+
+		foreach ( $defaults as $type => $fields ) {
+			$type = $this->normalize_type( (string) $type );
+
+			foreach ( (array) $fields as $key => $value ) {
+				$key   = (string) $key;
+				$value = (string) $value;
+
+				if ( (string) get_user_meta( $user_id, "{$type}_{$key}", true ) === $value ) {
+					continue;
+				}
+
+				$setter = "set_{$type}_{$key}";
+				if ( is_callable( array( $customer, $setter ) ) ) {
+					$customer->{$setter}( $value );
+				} else {
+					$customer->update_meta_data( "{$type}_{$key}", $value );
+				}
+				$changed = true;
+			}
+		}
+
+		if ( ! $changed ) {
+			return false;
+		}
+
+		$customer->save();
+		$this->invalidate_user_cache( $user_id );
+
+		return true;
+	}
+
+	/**
 	 * Clear a WooCommerce profile default.
 	 *
 	 * @param int    $user_id Customer ID.
@@ -487,9 +551,13 @@ final class AddressRepository {
 	 * @param string              $id      Existing entry ID or "new".
 	 * @param array<string,mixed> $fields  Address fields.
 	 * @param string[]            $roles   Default roles assigned to the entry.
+	 * @param string[]|null       $rendered_keys Field keys the editor rendered.
+	 *                                           Stored values for any other key
+	 *                                           are kept rather than blanked.
+	 *                                           Null treats every key as rendered.
 	 * @return string|bool|\WP_Error
 	 */
-	public function save_entry( int $user_id, string $id, array $fields, array $roles ) {
+	public function save_entry( int $user_id, string $id, array $fields, array $roles, ?array $rendered_keys = null ) {
 		$id     = $this->sanitize_id( $id );
 		$fields = $this->sanitize_fields( $fields );
 		$roles  = array_values(
@@ -499,8 +567,10 @@ final class AddressRepository {
 			)
 		);
 
-		$existing       = 'new' === $id ? null : $this->get_entry( $user_id, $id );
-		$existing_roles = is_array( $existing ) ? (array) $existing['roles'] : array();
+		$existing        = 'new' === $id ? null : $this->get_entry( $user_id, $id );
+		$existing_roles  = is_array( $existing ) ? (array) $existing['roles'] : array();
+		$existing_fields = is_array( $existing ) ? (array) $existing['fields'] : array();
+		$complete        = $this->carry_unrendered( $existing_fields, $fields, $rendered_keys );
 
 		if ( 'new' !== $id && null === $existing ) {
 			return new \WP_Error(
@@ -516,25 +586,108 @@ final class AddressRepository {
 		foreach ( $roles as $role ) {
 			if ( in_array( $role, $existing_roles, true ) ) {
 				// Editing an address in a role it already owns is an in-place
-				// update, not a role reassignment.
-				$this->save_primary( $user_id, $role, $fields );
+				// update, not a role reassignment. Fields the editor did not
+				// show keep that role's own stored values.
+				$this->save_primary(
+					$user_id,
+					$role,
+					$this->carry_unrendered( $this->get_persisted_primary( $user_id, $role ), $fields, $rendered_keys )
+				);
 			} else {
-				$this->assign_primary( $user_id, $role, $fields );
+				$this->assign_primary( $user_id, $role, $complete );
 			}
 		}
 
 		if ( ! empty( $roles ) ) {
 			$this->remove_saved_id( $user_id, $id );
-			$this->remove_saved_duplicate( $user_id, $fields );
+			$this->remove_saved_duplicate( $user_id, $complete );
 
 			return "default_{$roles[0]}";
 		}
 
-		if ( 'new' === $id || ! empty( $existing_roles ) ) {
+		if ( ! empty( $existing_roles ) ) {
+			// Removing every role turns a default into an additional address.
+			// Like a displaced default, it must never be lost, so it bypasses
+			// the additional-address limit.
+			return $this->preserve_as_extra( $user_id, $complete );
+		}
+
+		if ( 'new' === $id ) {
 			return $this->create( $user_id, $fields );
 		}
 
-		return $this->update( $user_id, $id, $fields );
+		return $this->update( $user_id, $id, $complete );
+	}
+
+	/**
+	 * Delete every additional address a customer has (personal data erasure).
+	 *
+	 * The WooCommerce profile defaults are not touched; WooCommerce's own
+	 * eraser handles those.
+	 *
+	 * @param int $user_id Customer ID.
+	 * @return bool Whether any address was removed.
+	 */
+	public function erase_saved( int $user_id ): bool {
+		if ( empty( $this->get_saved( $user_id ) ) ) {
+			return false;
+		}
+
+		delete_user_meta( $user_id, self::META_KEY );
+		$this->invalidate_user_cache( $user_id );
+
+		return true;
+	}
+
+	/**
+	 * Make a checkout address a default even when it cannot be added as an
+	 * additional address because the limit is full.
+	 *
+	 * A promotion is a swap: the displaced default is kept in the book.
+	 *
+	 * @param int                 $user_id Customer ID.
+	 * @param string              $type    Billing or shipping.
+	 * @param array<string,mixed> $fields  Address fields.
+	 * @return void
+	 */
+	public function promote_address( int $user_id, string $type, array $fields ): void {
+		$fields = $this->sanitize_fields( $fields );
+
+		if ( ! $this->has_address( $fields ) ) {
+			return;
+		}
+
+		$this->assign_primary( $user_id, $type, $fields );
+		$this->remove_saved_duplicate( $user_id, $fields );
+	}
+
+	/**
+	 * Keep stored values for fields an editor did not render.
+	 *
+	 * A field editor or the store's country rules can remove a core field
+	 * from the form. Saving must not blank what the address already holds.
+	 *
+	 * @param array<string,mixed> $stored        Stored fields for the entry.
+	 * @param array<string,mixed> $fields        Submitted fields.
+	 * @param string[]|null       $rendered_keys Field keys the editor rendered.
+	 * @return array<string,string>
+	 */
+	private function carry_unrendered( array $stored, array $fields, ?array $rendered_keys ): array {
+		$fields = $this->sanitize_fields( $fields );
+
+		if ( null === $rendered_keys ) {
+			return $fields;
+		}
+
+		$stored = $this->sanitize_fields( $stored );
+
+		foreach ( $this->get_field_keys() as $key ) {
+			if ( ! in_array( $key, $rendered_keys, true ) ) {
+				$fields[ $key ] = $stored[ $key ];
+			}
+		}
+
+		return $fields;
 	}
 
 	/**

@@ -841,7 +841,30 @@
 	margin-bottom: 24px;
 }
 
-.unwan-checkout-step--fields-hidden > .wc-block-components-checkout-step__content > .wc-block-components-address-address-wrapper {
+/*
+ * Checkout Blocks: collapse the address rows a saved address stands in for.
+ *
+ * The picker lists those rows in data-unwan-collapse. The list sits on
+ * Unwan's own element because WooCommerce re-renders its fieldset's class
+ * list (for example while an order is processing), which would erase a class
+ * added there. Rows are collapsed one by one, never the whole address
+ * wrapper, so fields other plugins add to the address form stay visible, and
+ * a row WooCommerce reports invalid is left out of the list so the customer
+ * can fix it. Without :has() support nothing collapses, which is safe.
+ */
+.wc-block-components-checkout-step__content:has(> .unwan-picker[data-unwan-collapse~="first_name"]) .wc-block-components-address-form__first_name,
+.wc-block-components-checkout-step__content:has(> .unwan-picker[data-unwan-collapse~="last_name"]) .wc-block-components-address-form__last_name,
+.wc-block-components-checkout-step__content:has(> .unwan-picker[data-unwan-collapse~="company"]) .wc-block-components-address-form__company,
+.wc-block-components-checkout-step__content:has(> .unwan-picker[data-unwan-collapse~="country"]) .wc-block-components-address-form__country,
+.wc-block-components-checkout-step__content:has(> .unwan-picker[data-unwan-collapse~="address_1"]) .wc-block-components-address-form__address_1,
+.wc-block-components-checkout-step__content:has(> .unwan-picker[data-unwan-collapse~="address_2"]) .wc-block-components-address-form__address_2,
+.wc-block-components-checkout-step__content:has(> .unwan-picker[data-unwan-collapse~="address_2"]) .wc-block-components-address-form__address_2-toggle,
+.wc-block-components-checkout-step__content:has(> .unwan-picker[data-unwan-collapse~="address_2"]) .wc-block-components-address-form__address_2-hidden-input,
+.wc-block-components-checkout-step__content:has(> .unwan-picker[data-unwan-collapse~="city"]) .wc-block-components-address-form__city,
+.wc-block-components-checkout-step__content:has(> .unwan-picker[data-unwan-collapse~="state"]) .wc-block-components-address-form__state,
+.wc-block-components-checkout-step__content:has(> .unwan-picker[data-unwan-collapse~="postcode"]) .wc-block-components-address-form__postcode,
+.wc-block-components-checkout-step__content:has(> .unwan-picker[data-unwan-collapse~="phone"]) .wc-block-components-address-form__phone,
+.wc-block-components-checkout-step__content:has(> .unwan-picker[data-unwan-collapse]) .wc-block-components-address-card-wrapper {
 	display: none;
 }
 
@@ -850,6 +873,15 @@
 }
 
 .unwan-checkout__selection-field {
+	display: none !important;
+}
+
+/*
+ * Classic checkout: a managed row a saved address stands in for. !important
+ * because WooCommerce's address-i18n script calls .show() on rows when the
+ * country changes, which writes an inline display value.
+ */
+.unwan-checkout__field--collapsed {
 	display: none !important;
 }
 

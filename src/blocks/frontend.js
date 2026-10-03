@@ -12,7 +12,7 @@ import {
 } from '@woocommerce/block-data';
 import { getSetting } from '@woocommerce/settings';
 /* eslint-enable import/no-unresolved */
-import { useDispatch, useSelect } from '@wordpress/data';
+import { select as selectStore, useDispatch, useSelect } from '@wordpress/data';
 import {
 	useCallback,
 	useEffect,
@@ -38,6 +38,55 @@ const MATCH_KEYS = [
 	'postcode',
 ];
 const settings = getSetting( 'unwan_data', {} );
+
+/**
+ * Address keys Unwan manages. Only these rows are ever collapsed; every other
+ * field in the form, including fields added by other plugins, is left alone.
+ */
+const MANAGED_KEYS = (
+	Array.isArray( settings.fieldKeys ) ? settings.fieldKeys : []
+).filter( ( key ) => key !== 'email' );
+
+// "Force shipping to the customer billing address" makes billing the
+// shipping address, exactly as local pickup does.
+const FORCED_BILLING_ADDRESS = Boolean(
+	getSetting( 'forcedBillingAddress', false )
+);
+
+/**
+ * Wait for React to commit and WooCommerce to re-validate changed fields.
+ *
+ * @return {Promise<void>} Resolves on the next macrotask.
+ */
+const nextTick = () =>
+	new Promise( ( resolve ) => window.setTimeout( resolve, 0 ) );
+
+/**
+ * The customer's choice per address type, kept for this browser tab so a
+ * reload shows what they chose. Only an address ID or "new" is stored, never
+ * address data. Storage can be unavailable (private modes, blocked storage).
+ */
+const STORAGE_PREFIX = 'unwan-selection-';
+
+const readStoredSelection = ( type ) => {
+	try {
+		return window.sessionStorage.getItem( STORAGE_PREFIX + type ) || '';
+	} catch {
+		return '';
+	}
+};
+
+const storeSelection = ( type, value ) => {
+	try {
+		if ( value ) {
+			window.sessionStorage.setItem( STORAGE_PREFIX + type, value );
+		} else {
+			window.sessionStorage.removeItem( STORAGE_PREFIX + type );
+		}
+	} catch {
+		// Remembering the choice across a reload is a convenience only.
+	}
+};
 
 /**
  * Selection state kept outside the React tree, keyed by address type.
@@ -91,30 +140,21 @@ const normalizeValue = ( value ) =>
 /**
  * Check whether two checkout addresses contain the same address-book fields.
  *
- * @param {Object} current  Current WooCommerce address.
- * @param {Object} expected Normalized saved address.
- * @return {boolean} Whether all saved fields match.
+ * @param {Object}   current  Current WooCommerce address.
+ * @param {Object}   expected Normalized saved address.
+ * @param {string[]} keys     Fields to compare.
+ * @return {boolean} Whether all compared fields match.
  */
-const addressMatches = ( current = {}, expected = {} ) =>
-	MATCH_KEYS.every(
-		( key ) =>
-			normalizeValue( current[ key ] ) ===
-			normalizeValue( expected[ key ] )
-	);
+const addressMatches = ( current = {}, expected = {}, keys = MATCH_KEYS ) =>
+	keys.every( ( key ) => {
+		// WooCommerce reformats some postcodes (for example adding a space).
+		const clean = ( value ) =>
+			key === 'postcode'
+				? normalizeValue( value ).replace( /\s+/g, '' )
+				: normalizeValue( value );
 
-/**
- * Compare every field supplied by a store synchronization operation.
- *
- * @param {Object} current  Current WooCommerce address.
- * @param {Object} expected Address being synchronized.
- * @return {boolean} Whether all supplied values match.
- */
-const allAddressFieldsMatch = ( current = {}, expected = {} ) =>
-	Object.keys( expected ).every(
-		( key ) =>
-			normalizeValue( current[ key ] ) ===
-			normalizeValue( expected[ key ] )
-	);
+		return clean( current[ key ] ) === clean( expected[ key ] );
+	} );
 
 /**
  * Whether an address contains meaningful postal data.
@@ -279,23 +319,30 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 	const [ customOrigin, setCustomOrigin ] = useState(
 		() => persistedState?.customOrigin || ''
 	);
+	// Managed rows revealed because WooCommerce reports them invalid for the
+	// selected saved address. Only a new choice in the picker clears them, so
+	// a row never collapses while the customer is filling it in.
+	const [ revealedKeys, setRevealedKeys ] = useState(
+		() => persistedState?.revealedKeys || []
+	);
 	const [ isUpdating, setIsUpdating ] = useState( false );
 	const isMounted = useRef( true );
 	const hasInitializedAddress = useRef(
 		Boolean( persistedState?.initialized )
 	);
 	const pickerRef = useRef( null );
-	const { setBillingAddress, setShippingAddress, updateCustomerData } =
-		useDispatch( cartStore );
+	const { setBillingAddress, setShippingAddress } = useDispatch( cartStore );
 	const { setEditingBillingAddress, setEditingShippingAddress } =
 		useDispatch( checkoutStore );
-	const { clearValidationError } = useDispatch( validationStore );
 	const setExtensionData = checkoutExtensionData?.setExtensionData;
 	const {
 		currentAddress,
-		shippingAddress,
+		billingEmail,
 		useShippingAsBilling,
 		prefersCollection,
+		validationErrors,
+		cartReady,
+		checkoutComplete,
 	} = useSelect(
 		( select ) => {
 			const customerData = select( cartStore ).getCustomerData();
@@ -306,20 +353,30 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 					type === 'billing'
 						? customerData.billingAddress
 						: customerData.shippingAddress,
-				shippingAddress: customerData.shippingAddress,
+				billingEmail: customerData.billingAddress?.email || '',
 				useShippingAsBilling:
 					checkout.getUseShippingAsBilling?.() ?? false,
 				prefersCollection: checkout.prefersCollection?.() ?? false,
+				validationErrors:
+					select( validationStore ).getValidationErrors?.() || {},
+				// Until the cart has loaded, the store holds empty placeholder
+				// addresses that must not be classified.
+				cartReady:
+					select( cartStore ).hasFinishedResolution?.(
+						'getCartData'
+					) ?? true,
+				checkoutComplete: checkout.isComplete?.() ?? false,
 			};
 		},
 		[ type ]
 	);
-	// Local pickup takes the shipping address out of the order, so WooCommerce
-	// collects the billing address on its own even though its
-	// "use shipping as billing" flag is still set. Mirroring shipping into
-	// billing here would overwrite and collapse the only address the customer
-	// can still edit, so collection disables the synchronization entirely.
-	const syncBillingToShipping = useShippingAsBilling && ! prefersCollection;
+	// WooCommerce makes the billing address the shipping address for local
+	// pickup and for "Force shipping to the customer billing address".
+	const billingIsShipping = FORCED_BILLING_ADDRESS || prefersCollection;
+	// With "Use same address for billing" on a delivery order, WooCommerce
+	// unmounts the billing step and copies shipping into billing itself.
+	const shippingIsBilling = useShippingAsBilling && ! prefersCollection;
+	const isSavedSelection = Boolean( addressMap[ selection ] );
 	const shouldRender =
 		Boolean( settings.isLoggedIn ) &&
 		Boolean( typeSettings.enabled ) &&
@@ -336,13 +393,15 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 	}, [] );
 
 	// Keep WooCommerce's native form mounted as the checkout source of truth.
+	// When this selector is mounted it owns its address type, so the form is
+	// always editable; Unwan collapses individual rows instead.
 	useEffect( () => {
 		if ( ! shouldRender ) {
 			return;
 		}
 
 		if ( type === 'billing' ) {
-			setEditingBillingAddress( ! syncBillingToShipping );
+			setEditingBillingAddress( true );
 		} else {
 			setEditingShippingAddress( true );
 		}
@@ -350,37 +409,8 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 		setEditingBillingAddress,
 		setEditingShippingAddress,
 		shouldRender,
-		syncBillingToShipping,
 		type,
 	] );
-
-	useLayoutEffect( () => {
-		if ( ! shouldRender ) {
-			return undefined;
-		}
-
-		const checkoutStep = pickerRef.current?.closest(
-			'.wc-block-components-checkout-step'
-		);
-
-		if ( ! checkoutStep ) {
-			return undefined;
-		}
-
-		// Only a saved address stands in for the native fields. "new" and
-		// "custom" are both addresses the customer is entering or correcting,
-		// so the fields have to stay visible and editable for them.
-		checkoutStep.classList.toggle(
-			'unwan-checkout-step--fields-hidden',
-			Boolean( addressMap[ selection ] )
-		);
-
-		return () => {
-			checkoutStep.classList.remove(
-				'unwan-checkout-step--fields-hidden'
-			);
-		};
-	}, [ addressMap, selection, shouldRender ] );
 
 	const buildAddress = useCallback(
 		( nextSelection ) => {
@@ -412,41 +442,59 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 
 			setIsUpdating( true );
 
-			try {
-				if ( type === 'billing' ) {
-					setEditingBillingAddress( true );
-					setBillingAddress( nextAddress );
-					await updateCustomerData( {
-						billingAddress: nextAddress,
-					} );
-				} else {
-					setEditingShippingAddress( true );
-					setShippingAddress( nextAddress );
-					await updateCustomerData( {
-						shippingAddress: nextAddress,
-					} );
-				}
+			if ( type === 'billing' ) {
+				setEditingBillingAddress( true );
+				setBillingAddress( nextAddress );
 
-				if ( nextSelection === 'new' ) {
-					focusCountryField();
+				// WooCommerce's own billing form copies billing into shipping
+				// whenever billing is the shipping address. Do the same, so
+				// shipping rates and taxes follow the chosen address.
+				if ( billingIsShipping ) {
+					const nextShipping = { ...nextAddress };
+					delete nextShipping.email;
+					setShippingAddress( nextShipping );
 				}
-			} catch {
-				// WooCommerce owns checkout notices for customer-update errors.
-			} finally {
-				if ( isMounted.current ) {
-					setIsUpdating( false );
+			} else {
+				setEditingShippingAddress( true );
+				setShippingAddress( nextAddress );
+
+				// With "Use same address for billing", WooCommerce's shipping
+				// form copies every change into billing. Do the same, or the
+				// order is billed to the previous address.
+				if ( shippingIsBilling ) {
+					setBillingAddress( {
+						...nextAddress,
+						email: billingEmail,
+					} );
 				}
+			}
+
+			// WooCommerce sends the changed address to the server itself. Give
+			// it time to re-validate the new values before the reveal check
+			// reads its validation state, so errors left over from the
+			// previous address never count.
+			await nextTick();
+			await nextTick();
+
+			if ( nextSelection === 'new' ) {
+				focusCountryField();
+			}
+
+			if ( isMounted.current ) {
+				setIsUpdating( false );
 			}
 		},
 		[
+			billingEmail,
+			billingIsShipping,
 			buildAddress,
 			focusCountryField,
 			setBillingAddress,
 			setEditingBillingAddress,
 			setEditingShippingAddress,
 			setShippingAddress,
+			shippingIsBilling,
 			type,
-			updateCustomerData,
 		]
 	);
 
@@ -454,10 +502,38 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 	useEffect( () => {
 		if (
 			! shouldRender ||
+			! cartReady ||
 			isUpdating ||
-			hasInitializedAddress.current ||
-			( type === 'billing' && syncBillingToShipping )
+			hasInitializedAddress.current
 		) {
+			return;
+		}
+
+		hasInitializedAddress.current = true;
+
+		// A reload keeps the customer's choice: a saved address is selected
+		// (and re-applied if the cart lost part of it), "Enter a new address"
+		// stays open.
+		const storedSelection = readStoredSelection( type );
+
+		if ( storedSelection === 'new' ) {
+			setSelection( 'new' );
+			setCustomOrigin( 'new' );
+			return;
+		}
+
+		if ( addressMap[ storedSelection ] ) {
+			setSelection( storedSelection );
+			if (
+				! addressMatches(
+					currentAddress,
+					normalizeAddress(
+						addressMap[ storedSelection ].fields || {}
+					)
+				)
+			) {
+				applyAddress( storedSelection );
+			}
 			return;
 		}
 
@@ -467,8 +543,6 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 				normalizeAddress( address.fields || {} )
 			)
 		);
-
-		hasInitializedAddress.current = true;
 
 		if ( matchingAddress ) {
 			setSelection( matchingAddress.id );
@@ -487,14 +561,202 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 		setSelection( defaultSelection );
 		applyAddress( defaultSelection );
 	}, [
+		addressMap,
 		addresses,
 		applyAddress,
+		cartReady,
 		currentAddress,
 		defaultSelection,
 		isUpdating,
 		shouldRender,
-		syncBillingToShipping,
 		type,
+	] );
+
+	// Re-check a saved selection against the cart after a remount restored it
+	// and after the delivery mode changed. WooCommerce copies addresses
+	// between billing and shipping when the mode changes (local pickup, "Use
+	// same address for billing"), so the cart can hold a different address
+	// than the saved one the picker still shows. When it does, show the cart's
+	// address as a custom one, with its fields, so the summary never differs
+	// from what the order will use.
+	const needsReconcile = useRef( Boolean( persistedState?.initialized ) );
+	const previousMode = useRef( null );
+	// The saved address already put back once after an outside change.
+	const reappliedFor = useRef( '' );
+
+	useEffect( () => {
+		const mode = `${ prefersCollection }|${ useShippingAsBilling }`;
+		if ( previousMode.current !== null && previousMode.current !== mode ) {
+			needsReconcile.current = true;
+		}
+		previousMode.current = mode;
+	}, [ prefersCollection, useShippingAsBilling ] );
+
+	useEffect( () => {
+		if (
+			! shouldRender ||
+			isUpdating ||
+			! hasInitializedAddress.current ||
+			( ! needsReconcile.current && ! addressMap[ selection ] )
+		) {
+			return undefined;
+		}
+
+		// Read the cart after WooCommerce's own copy for the mode change.
+		const timer = window.setTimeout( () => {
+			const triggered = needsReconcile.current;
+			needsReconcile.current = false;
+
+			const saved = addressMap[ selection ];
+			if ( ! saved ) {
+				return;
+			}
+
+			const customerData = selectStore( cartStore ).getCustomerData();
+			const cartAddress =
+				type === 'billing'
+					? customerData.billingAddress
+					: customerData.shippingAddress;
+			// Revealed rows are the customer's to edit; any other identity
+			// field can only change from outside.
+			const lockedKeys = MATCH_KEYS.filter(
+				( key ) => ! revealedKeys.includes( key )
+			);
+
+			if (
+				! hasAddress( cartAddress ) ||
+				addressMatches(
+					cartAddress,
+					normalizeAddress( saved.fields || {} ),
+					triggered ? MATCH_KEYS : lockedKeys
+				)
+			) {
+				return;
+			}
+
+			// Something outside the picker replaced the address behind a
+			// saved selection: WooCommerce refreshing the cart from the server
+			// (it does not send an address with errors, so the two can
+			// differ), or another plugin. Put the customer's choice back once;
+			// if it is replaced again, follow the cart instead, so the
+			// summary never shows one address while the order uses another.
+			if ( ! triggered && reappliedFor.current !== selection ) {
+				reappliedFor.current = selection;
+				applyAddress( selection );
+				return;
+			}
+
+			// With a separate billing address, WooCommerce copied billing into
+			// shipping only as a side effect of local pickup: put back the
+			// customer's delivery choice.
+			if ( type === 'shipping' && ! shippingIsBilling ) {
+				setRevealedKeys( [] );
+				applyAddress( selection );
+				return;
+			}
+
+			// The cart now holds another saved address (for example, with
+			// "Use same address for billing", the billing address chosen
+			// during local pickup): select it, collapsed.
+			const matchingAddress = addresses.find( ( address ) =>
+				addressMatches(
+					cartAddress,
+					normalizeAddress( address.fields || {} )
+				)
+			);
+
+			if ( matchingAddress ) {
+				setSelection( matchingAddress.id );
+				setCustomOrigin( '' );
+				setRevealedKeys( [] );
+				return;
+			}
+
+			const relatedAddress = addresses.find( ( address ) =>
+				hasSameIdentity( cartAddress, address.fields || {} )
+			);
+			setSelection( 'custom' );
+			setCustomOrigin( relatedAddress ? 'edited' : 'cart' );
+			setRevealedKeys( [] );
+		}, 0 );
+
+		return () => window.clearTimeout( timer );
+	}, [
+		addressMap,
+		addresses,
+		applyAddress,
+		currentAddress,
+		isUpdating,
+		prefersCollection,
+		revealedKeys,
+		selection,
+		shippingIsBilling,
+		shouldRender,
+		type,
+		useShippingAsBilling,
+	] );
+
+	// Reveal managed rows WooCommerce reports invalid for a saved address: a
+	// value the store now requires that the address lacks (a field editor or
+	// WooCommerce made phone or company required), or a value the current
+	// rules reject. WooCommerce registers these errors as soon as the fields
+	// mount, so the rows show before the customer clicks Place order.
+	useEffect( () => {
+		if (
+			! shouldRender ||
+			! isSavedSelection ||
+			isUpdating ||
+			! hasInitializedAddress.current
+		) {
+			return undefined;
+		}
+
+		// Read the store after WooCommerce's inputs have re-validated in this
+		// commit rather than the snapshot taken at render time.
+		const timer = window.setTimeout( () => {
+			const errors =
+				selectStore( validationStore ).getValidationErrors?.() || {};
+			const customerData = selectStore( cartStore ).getCustomerData();
+			const cartAddress =
+				( type === 'billing'
+					? customerData.billingAddress
+					: customerData.shippingAddress ) || {};
+			const savedFields = addressMap[ selection ]?.fields || {};
+			const invalid = MANAGED_KEYS.filter(
+				( key ) =>
+					errors[ `${ type }_${ key }` ] ||
+					errors[ `${ type }-${ key }` ] ||
+					// A value the order will use but the saved address doesn't
+					// hold (for example a company typed into a revealed row
+					// before a reload) must stay visible. The identity keys
+					// already decide which address is selected.
+					( ! MATCH_KEYS.includes( key ) &&
+						normalizeValue( cartAddress[ key ] ) !==
+							normalizeValue( savedFields[ key ] ) )
+			);
+
+			if ( ! invalid.length ) {
+				return;
+			}
+
+			setRevealedKeys( ( previous ) => {
+				const next = Array.from(
+					new Set( [ ...previous, ...invalid ] )
+				);
+				return next.length === previous.length ? previous : next;
+			} );
+		}, 0 );
+
+		return () => window.clearTimeout( timer );
+	}, [
+		addressMap,
+		currentAddress,
+		isSavedSelection,
+		isUpdating,
+		selection,
+		shouldRender,
+		type,
+		validationErrors,
 	] );
 
 	// Survive a third-party remount mid-entry (see selectionState).
@@ -506,9 +768,47 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 		selectionState[ type ] = {
 			selection,
 			customOrigin,
+			revealedKeys,
 			initialized: hasInitializedAddress.current,
 		};
-	}, [ customOrigin, selection, shouldRender, type ] );
+
+		if ( hasInitializedAddress.current ) {
+			const remembered = selection === 'custom' ? 'new' : selection;
+			storeSelection( type, remembered );
+
+			// Keep the other address's remembered choice in step with
+			// WooCommerce's own mirroring, so a reload restores what is in
+			// effect: with "Use same address for billing", billing follows
+			// the delivery address; during local pickup with that box ticked,
+			// the delivery address follows billing.
+			if ( type === 'shipping' && shippingIsBilling ) {
+				storeSelection( 'billing', remembered );
+			}
+			if (
+				type === 'billing' &&
+				prefersCollection &&
+				useShippingAsBilling
+			) {
+				storeSelection( 'shipping', remembered );
+			}
+		}
+	}, [
+		customOrigin,
+		prefersCollection,
+		revealedKeys,
+		selection,
+		shippingIsBilling,
+		shouldRender,
+		type,
+		useShippingAsBilling,
+	] );
+
+	// A placed order ends this choice; the next checkout starts fresh.
+	useEffect( () => {
+		if ( checkoutComplete ) {
+			storeSelection( type, '' );
+		}
+	}, [ checkoutComplete, type ] );
 
 	useEffect( () => {
 		if ( ! shouldRender ) {
@@ -517,9 +817,7 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 
 		let submittedSelection = selection;
 
-		if ( type === 'billing' && syncBillingToShipping ) {
-			submittedSelection = '';
-		} else if ( selection === 'custom' ) {
+		if ( selection === 'custom' ) {
 			submittedSelection = customOrigin === 'edited' ? '' : 'new';
 		}
 
@@ -529,50 +827,26 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 			submittedSelection
 		);
 
-		if ( type === 'shipping' && syncBillingToShipping ) {
+		// The billing step is unmounted and WooCommerce copies shipping into
+		// billing, so no billing choice of Unwan's applies.
+		if ( type === 'shipping' && shippingIsBilling ) {
 			setExtensionData( NAMESPACE, 'billing_selection', '' );
+		}
+
+		// Local pickup unmounts the shipping step and sends the billing address
+		// as the shipping address. A shipping choice made before switching
+		// must not apply; the shipping selector re-sends its own when it
+		// mounts again.
+		if ( type === 'billing' && prefersCollection ) {
+			setExtensionData( NAMESPACE, 'shipping_selection', '' );
 		}
 	}, [
 		customOrigin,
+		prefersCollection,
 		selection,
 		setExtensionData,
+		shippingIsBilling,
 		shouldRender,
-		syncBillingToShipping,
-		type,
-	] );
-
-	// Enforce shipping-to-billing synchronization and clear hidden errors.
-	useEffect( () => {
-		if ( ! shouldRender || type !== 'billing' || ! syncBillingToShipping ) {
-			return;
-		}
-
-		const nextBillingAddress = {
-			...shippingAddress,
-			email: currentAddress?.email || '',
-		};
-
-		setEditingBillingAddress( false );
-
-		if ( ! allAddressFieldsMatch( currentAddress, nextBillingAddress ) ) {
-			setBillingAddress( nextBillingAddress );
-		}
-
-		const fieldKeys = Array.isArray( settings.fieldKeys )
-			? settings.fieldKeys
-			: [];
-
-		fieldKeys.forEach( ( key ) => {
-			clearValidationError?.( `billing_${ key }` );
-		} );
-	}, [
-		clearValidationError,
-		currentAddress,
-		setBillingAddress,
-		setEditingBillingAddress,
-		shippingAddress,
-		shouldRender,
-		syncBillingToShipping,
 		type,
 	] );
 
@@ -583,11 +857,22 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 				return;
 			}
 
+			// Choosing "Enter a new address" again must not clear what the
+			// customer has already typed.
+			if (
+				nextSelection === 'new' &&
+				( selection === 'new' || selection === 'custom' )
+			) {
+				return;
+			}
+
 			setSelection( nextSelection );
 			setCustomOrigin( nextSelection === 'new' ? 'new' : '' );
+			setRevealedKeys( [] );
+			reappliedFor.current = '';
 			applyAddress( nextSelection );
 		},
-		[ applyAddress, isUpdating ]
+		[ applyAddress, isUpdating, selection ]
 	);
 
 	useEffect( () => {
@@ -618,7 +903,10 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 		window.unwanAddressPicker.mount( pickerRef.current, {
 			type,
 			addresses,
-			selection,
+			// An address that isn't in the book is edited in the open fields,
+			// so the picker shows "Enter a new address" as the choice rather
+			// than a collapsed summary above open fields.
+			selection: selection === 'custom' ? 'new' : selection,
 			summary,
 			disabled: isUpdating,
 			searchThreshold: settings.searchThreshold ?? 4,
@@ -640,11 +928,21 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 		return null;
 	}
 
+	// Only a saved address stands in for the native fields, and only for rows
+	// that need nothing from the customer. The list lives on Unwan's own
+	// element: WooCommerce re-renders its fieldset's class list (for example
+	// while an order is processing), which would erase anything added there.
+	// assets/css/unwan.css hides each listed row with :has().
+	const collapsedKeys = isSavedSelection
+		? MANAGED_KEYS.filter( ( key ) => ! revealedKeys.includes( key ) )
+		: [];
+
 	return (
 		<div
 			id={ `unwan-${ type }-picker` }
 			ref={ pickerRef }
 			className={ `unwan-picker unwan-picker--block unwan-picker--${ type }` }
+			data-unwan-collapse={ collapsedKeys.join( ' ' ) || undefined }
 		/>
 	);
 };

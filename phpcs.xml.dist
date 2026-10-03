@@ -7,6 +7,9 @@
 	<exclude-pattern>/node_modules/*</exclude-pattern>
 	<exclude-pattern>/vendor/*</exclude-pattern>
 	<exclude-pattern>/tests/*</exclude-pattern>
+	<!-- The WordPress.org SVN working copy holds copies of the released plugin,
+	     not source; scanning it reports every class as a duplicate. -->
+	<exclude-pattern>/wordpress-svn/*</exclude-pattern>
 
 	<arg value="sp"/>
 	<arg name="basepath" value="./"/>

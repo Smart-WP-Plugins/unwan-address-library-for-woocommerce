@@ -72,6 +72,7 @@ final class Plugin {
 		( new AccountController( $repository, $settings ) )->register();
 		( new ClassicCheckout( $repository, $settings ) )->register();
 		( new BlocksController( $repository, $settings ) )->register();
+		( new Privacy( $repository ) )->register();
 
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_styles' ), 99 );

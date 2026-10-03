@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Unwan – Multiple Address Book for WooCommerce 1.0.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/unwan-for-woocommerce/\n"
-"POT-Creation-Date: 2026-08-14 00:49+0530\n"
+"POT-Creation-Date: 2026-10-04 04:37+0530\n"
 "PO-Revision-Date: 2026-08-14 00:34+0530\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -15,13 +15,14 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: includes/AccountController.php:97 includes/AccountController.php:106
-#: includes/Admin/Settings.php:63
+#: includes/Admin/Settings.php:63 includes/Privacy.php:61
+#: includes/Privacy.php:77 includes/Privacy.php:117
 msgid "Address book"
 msgstr "アドレス帳"
 
-#: includes/AccountController.php:143 includes/AddressRepository.php:462
-#: includes/AddressRepository.php:508 includes/AddressRepository.php:554
-#: includes/AddressRepository.php:587
+#: includes/AccountController.php:143 includes/AddressRepository.php:526
+#: includes/AddressRepository.php:578 includes/AddressRepository.php:707
+#: includes/AddressRepository.php:740
 msgid "That saved address could not be found."
 msgstr "保存された住所が見つかりませんでした。"
 
@@ -39,36 +40,36 @@ msgstr "有効な電話番号を入力してください。"
 msgid "Please enter a complete postal address."
 msgstr "完全な住所を入力してください。"
 
-#: includes/AccountController.php:301
+#: includes/AccountController.php:307
 msgid "Address saved."
 msgstr "住所を保存しました。"
 
-#: includes/AccountController.php:319
+#: includes/AccountController.php:325
 msgid "Address deleted."
 msgstr "住所を削除しました。"
 
-#: includes/AccountController.php:343
+#: includes/AccountController.php:349
 msgid "Default address updated."
 msgstr "デフォルトの住所を更新しました。"
 
-#: includes/AddressRepository.php:286 includes/Admin/Settings.php:401
+#: includes/AddressRepository.php:350 includes/Admin/Settings.php:401
 msgid "Address"
 msgstr "住所"
 
-#: includes/AddressRepository.php:427
+#: includes/AddressRepository.php:491
 msgid "Your address book has reached its saved-address limit."
 msgstr "アドレス帳の保存件数が上限に達しています。"
 
-#: includes/AddressRepository.php:471
+#: includes/AddressRepository.php:535
 msgid "That address is already in your address book."
 msgstr "その住所はすでにアドレス帳に登録されています。"
 
-#: includes/AddressRepository.php:561
+#: includes/AddressRepository.php:714
 msgid "Change this address’s default roles before deleting it."
 msgstr "削除する前に、この住所のデフォルト役割を変更してください。"
 
 #. translators: 1: recipient name, 2: formatted postal address.
-#: includes/AddressRepository.php:738
+#: includes/AddressRepository.php:891
 #, php-format
 msgid "%1$s (default) — %2$s"
 msgstr "%1$s (デフォルト) — %2$s"
@@ -358,19 +359,19 @@ msgstr "検索条件に一致する保存済みの住所はありません。"
 msgid "Default"
 msgstr "デフォルト"
 
-#: includes/Checkout/BlocksController.php:202
+#: includes/Checkout/BlocksController.php:196
 msgid "Selected billing address-book entry."
 msgstr "請求先として選択されたアドレス帳の項目。"
 
-#: includes/Checkout/BlocksController.php:207
+#: includes/Checkout/BlocksController.php:201
 msgid "Selected shipping address-book entry."
 msgstr "配送先として選択されたアドレス帳の項目。"
 
-#: includes/Checkout/ClassicCheckout.php:153
+#: includes/Checkout/ClassicCheckout.php:162
 msgid "Please choose a valid saved address."
 msgstr "有効な保存済みの住所を選択してください。"
 
-#: includes/Plugin.php:121
+#: includes/Plugin.php:122
 msgid "Settings"
 msgstr "設定"
 
