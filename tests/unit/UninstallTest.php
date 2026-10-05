@@ -76,8 +76,8 @@ class UninstallTest extends UnwanTestCase {
 	 * The uninstall list carries no options that nothing owns.
 	 */
 	public function test_the_uninstall_list_has_no_stale_entries(): void {
-		// unwan_plugin_version is written by activation rather than by the
-		// settings screen, so it is expected in the list but not in the form.
+		// unwan_plugin_version is written by the upgrade check rather than by
+		// the settings screen, so it is expected in the list but not in the form.
 		$expected = array_merge( $this->settings_option_ids(), array( 'unwan_plugin_version' ) );
 		$stale    = array_diff( unwan_uninstall_option_names(), $expected );
 

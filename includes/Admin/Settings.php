@@ -32,6 +32,7 @@ final class Settings {
 			'woocommerce_admin_settings_sanitize_option_unwan_accent_color',
 			array( $this, 'sanitize_accent_color' )
 		);
+		add_filter( 'woocommerce_admin_settings_sanitize_option', array( $this, 'sanitize_label' ), 10, 2 );
 	}
 
 	/**
@@ -58,6 +59,7 @@ final class Settings {
 			return $settings;
 		}
 
+		$labels   = $this->label_defaults();
 		$settings = array(
 			array(
 				'title' => __( 'Address book', 'unwan-for-woocommerce' ),
@@ -156,35 +158,27 @@ final class Settings {
 			),
 			array(
 				'title' => __( 'Text and labels', 'unwan-for-woocommerce' ),
-				'desc'  => __( 'Customize customer-facing interface copy. Translations can still override the defaults.', 'unwan-for-woocommerce' ),
+				'desc'  => __( 'Customize customer-facing interface copy. Leave a field empty to show the default text, translated into each customer’s language.', 'unwan-for-woocommerce' ),
 				'id'    => 'unwan_label_options',
 				'type'  => 'title',
 			),
-			$this->text_setting( 'unwan_label_account_title', __( 'Address-book page title', 'unwan-for-woocommerce' ), __( 'Addresses', 'unwan-for-woocommerce' ) ),
-			$this->text_setting(
-				'unwan_label_account_description',
-				__( 'Address-book description', 'unwan-for-woocommerce' ),
-				__( 'Your billing default, shipping default, and additional addresses form one address book. Every address can be used anywhere at checkout.', 'unwan-for-woocommerce' )
-			),
-			$this->text_setting( 'unwan_label_add_address', __( 'Add-address button', 'unwan-for-woocommerce' ), __( 'Add new address', 'unwan-for-woocommerce' ) ),
-			$this->text_setting( 'unwan_label_add_heading', __( 'Add-address heading', 'unwan-for-woocommerce' ), __( 'Add a new address', 'unwan-for-woocommerce' ) ),
-			$this->text_setting( 'unwan_label_edit_heading', __( 'Edit-address heading', 'unwan-for-woocommerce' ), __( 'Edit address', 'unwan-for-woocommerce' ) ),
-			$this->text_setting( 'unwan_label_back', __( 'Back link', 'unwan-for-woocommerce' ), __( 'Back to addresses', 'unwan-for-woocommerce' ) ),
-			$this->text_setting( 'unwan_label_save', __( 'Save button', 'unwan-for-woocommerce' ), __( 'Save address', 'unwan-for-woocommerce' ) ),
-			$this->text_setting( 'unwan_label_cancel', __( 'Cancel action', 'unwan-for-woocommerce' ), __( 'Cancel', 'unwan-for-woocommerce' ) ),
-			$this->text_setting( 'unwan_label_empty_heading', __( 'Empty-state heading', 'unwan-for-woocommerce' ), __( 'You haven’t saved an address yet', 'unwan-for-woocommerce' ) ),
-			$this->text_setting(
-				'unwan_label_empty_description',
-				__( 'Empty-state description', 'unwan-for-woocommerce' ),
-				__( 'Add one now and it will be available to both billing and shipping at checkout.', 'unwan-for-woocommerce' )
-			),
-			$this->text_setting( 'unwan_label_billing_compact', __( 'Billing summary heading', 'unwan-for-woocommerce' ), __( 'Billing to', 'unwan-for-woocommerce' ) ),
-			$this->text_setting( 'unwan_label_shipping_compact', __( 'Shipping summary heading', 'unwan-for-woocommerce' ), __( 'Delivering to', 'unwan-for-woocommerce' ) ),
-			$this->text_setting( 'unwan_label_billing_panel', __( 'Billing picker heading', 'unwan-for-woocommerce' ), __( 'Bill to', 'unwan-for-woocommerce' ) ),
-			$this->text_setting( 'unwan_label_shipping_panel', __( 'Shipping picker heading', 'unwan-for-woocommerce' ), __( 'Deliver to', 'unwan-for-woocommerce' ) ),
-			$this->text_setting( 'unwan_label_search', __( 'Search placeholder', 'unwan-for-woocommerce' ), __( 'Filter by street, city or postcode', 'unwan-for-woocommerce' ) ),
-			$this->text_setting( 'unwan_label_new_address', __( 'New-address choice', 'unwan-for-woocommerce' ), __( 'Enter a new address', 'unwan-for-woocommerce' ) ),
-			$this->text_setting( 'unwan_label_change', __( 'Change action', 'unwan-for-woocommerce' ), __( 'Change', 'unwan-for-woocommerce' ) ),
+			$this->text_setting( 'unwan_label_account_title', __( 'Address-book page title', 'unwan-for-woocommerce' ), $labels['unwan_label_account_title'] ),
+			$this->text_setting( 'unwan_label_account_description', __( 'Address-book description', 'unwan-for-woocommerce' ), $labels['unwan_label_account_description'] ),
+			$this->text_setting( 'unwan_label_add_address', __( 'Add-address button', 'unwan-for-woocommerce' ), $labels['unwan_label_add_address'] ),
+			$this->text_setting( 'unwan_label_add_heading', __( 'Add-address heading', 'unwan-for-woocommerce' ), $labels['unwan_label_add_heading'] ),
+			$this->text_setting( 'unwan_label_edit_heading', __( 'Edit-address heading', 'unwan-for-woocommerce' ), $labels['unwan_label_edit_heading'] ),
+			$this->text_setting( 'unwan_label_back', __( 'Back link', 'unwan-for-woocommerce' ), $labels['unwan_label_back'] ),
+			$this->text_setting( 'unwan_label_save', __( 'Save button', 'unwan-for-woocommerce' ), $labels['unwan_label_save'] ),
+			$this->text_setting( 'unwan_label_cancel', __( 'Cancel action', 'unwan-for-woocommerce' ), $labels['unwan_label_cancel'] ),
+			$this->text_setting( 'unwan_label_empty_heading', __( 'Empty-state heading', 'unwan-for-woocommerce' ), $labels['unwan_label_empty_heading'] ),
+			$this->text_setting( 'unwan_label_empty_description', __( 'Empty-state description', 'unwan-for-woocommerce' ), $labels['unwan_label_empty_description'] ),
+			$this->text_setting( 'unwan_label_billing_compact', __( 'Billing summary heading', 'unwan-for-woocommerce' ), $labels['unwan_label_billing_compact'] ),
+			$this->text_setting( 'unwan_label_shipping_compact', __( 'Shipping summary heading', 'unwan-for-woocommerce' ), $labels['unwan_label_shipping_compact'] ),
+			$this->text_setting( 'unwan_label_billing_panel', __( 'Billing picker heading', 'unwan-for-woocommerce' ), $labels['unwan_label_billing_panel'] ),
+			$this->text_setting( 'unwan_label_shipping_panel', __( 'Shipping picker heading', 'unwan-for-woocommerce' ), $labels['unwan_label_shipping_panel'] ),
+			$this->text_setting( 'unwan_label_search', __( 'Search placeholder', 'unwan-for-woocommerce' ), $labels['unwan_label_search'] ),
+			$this->text_setting( 'unwan_label_new_address', __( 'New-address choice', 'unwan-for-woocommerce' ), $labels['unwan_label_new_address'] ),
+			$this->text_setting( 'unwan_label_change', __( 'Change action', 'unwan-for-woocommerce' ), $labels['unwan_label_change'] ),
 			array(
 				'id'   => 'unwan_label_options',
 				'type' => 'sectionend',
@@ -218,11 +212,15 @@ final class Settings {
 	}
 
 	/**
-	 * Build a standard WooCommerce text setting.
+	 * Build a customer-facing text setting.
+	 *
+	 * The translated default is a placeholder, not the field's value. As a
+	 * value, WooCommerce would save it in the language of whoever saved the
+	 * settings, and every customer would then see that language.
 	 *
 	 * @param string $id      Option identifier.
 	 * @param string $title   Admin label.
-	 * @param string $default Default value.
+	 * @param string $default Translated default text.
 	 * @return array<string,mixed>
 	 */
 	private function text_setting( string $id, string $title, string $default ): array {
@@ -230,7 +228,8 @@ final class Settings {
 			'title'             => $title,
 			'id'                => $id,
 			'type'              => 'text',
-			'default'           => $default,
+			'default'           => '',
+			'placeholder'       => $default,
 			'custom_attributes' => array(
 				'autocomplete' => 'off',
 			),
@@ -255,6 +254,101 @@ final class Settings {
 		}
 
 		return $color ? $color : '#6b3fa0';
+	}
+
+	/**
+	 * Store a label that matches its default as empty, so it keeps following
+	 * each customer's language.
+	 *
+	 * @param mixed               $value  Sanitized setting value.
+	 * @param array<string,mixed> $option Setting definition.
+	 * @return mixed
+	 */
+	public function sanitize_label( $value, $option ) {
+		$id       = (string) ( $option['id'] ?? '' );
+		$defaults = $this->label_defaults();
+
+		if ( isset( $defaults[ $id ] ) && is_string( $value ) && $this->is_default_label( $value, $defaults[ $id ] ) ) {
+			return '';
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Remove saved labels that only repeat their default text.
+	 *
+	 * Before 1.0.7 the settings screen saved every default as a value in the
+	 * language of whoever saved it, which froze that language for every
+	 * customer. A value matching the English or the site-language default is
+	 * removed so the translated default shows again; anything else is the
+	 * merchant's own copy and stays.
+	 *
+	 * @return void
+	 */
+	public function clear_default_labels(): void {
+		$sets = array( $this->label_defaults() );
+
+		foreach ( array_unique( array( 'en_US', get_locale() ) ) as $locale ) {
+			if ( switch_to_locale( $locale ) ) {
+				$sets[] = $this->label_defaults();
+				restore_previous_locale();
+			}
+		}
+
+		foreach ( array_keys( $sets[0] ) as $option ) {
+			$value = get_option( $option, '' );
+			if ( ! is_string( $value ) || '' === $value ) {
+				continue;
+			}
+
+			foreach ( $sets as $defaults ) {
+				if ( $this->is_default_label( $value, $defaults[ $option ] ) ) {
+					delete_option( $option );
+					break;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Whether a stored label is just its default text.
+	 *
+	 * @param string $value   Stored or submitted label.
+	 * @param string $default Default text in one language.
+	 * @return bool
+	 */
+	private function is_default_label( string $value, string $default ): bool {
+		$value = trim( $value );
+
+		return $value === $default || sanitize_text_field( $default ) === $value;
+	}
+
+	/**
+	 * Translated defaults of the customer-facing text settings.
+	 *
+	 * @return array<string,string>
+	 */
+	private function label_defaults(): array {
+		return array(
+			'unwan_label_account_title'       => __( 'Addresses', 'unwan-for-woocommerce' ),
+			'unwan_label_account_description' => __( 'Your billing default, shipping default, and additional addresses form one address book. Every address can be used anywhere at checkout.', 'unwan-for-woocommerce' ),
+			'unwan_label_add_address'         => __( 'Add new address', 'unwan-for-woocommerce' ),
+			'unwan_label_add_heading'         => __( 'Add a new address', 'unwan-for-woocommerce' ),
+			'unwan_label_edit_heading'        => __( 'Edit address', 'unwan-for-woocommerce' ),
+			'unwan_label_back'                => __( 'Back to addresses', 'unwan-for-woocommerce' ),
+			'unwan_label_save'                => __( 'Save address', 'unwan-for-woocommerce' ),
+			'unwan_label_cancel'              => __( 'Cancel', 'unwan-for-woocommerce' ),
+			'unwan_label_empty_heading'       => __( 'You haven’t saved an address yet', 'unwan-for-woocommerce' ),
+			'unwan_label_empty_description'   => __( 'Add one now and it will be available to both billing and shipping at checkout.', 'unwan-for-woocommerce' ),
+			'unwan_label_billing_compact'     => __( 'Billing to', 'unwan-for-woocommerce' ),
+			'unwan_label_shipping_compact'    => __( 'Delivering to', 'unwan-for-woocommerce' ),
+			'unwan_label_billing_panel'       => __( 'Bill to', 'unwan-for-woocommerce' ),
+			'unwan_label_shipping_panel'      => __( 'Deliver to', 'unwan-for-woocommerce' ),
+			'unwan_label_search'              => __( 'Filter by street, city or postcode', 'unwan-for-woocommerce' ),
+			'unwan_label_new_address'         => __( 'Enter a new address', 'unwan-for-woocommerce' ),
+			'unwan_label_change'              => __( 'Change', 'unwan-for-woocommerce' ),
+		);
 	}
 
 	/**
@@ -367,23 +461,18 @@ final class Settings {
 	 * @return array<string,string>
 	 */
 	public function get_account_labels(): array {
-		$labels = array(
-			'pageTitle'        => $this->label( 'unwan_label_account_title', __( 'Addresses', 'unwan-for-woocommerce' ) ),
-			'pageDescription'  => $this->label(
-				'unwan_label_account_description',
-				__( 'Your billing default, shipping default, and additional addresses form one address book. Every address can be used anywhere at checkout.', 'unwan-for-woocommerce' )
-			),
-			'addAddress'       => $this->label( 'unwan_label_add_address', __( 'Add new address', 'unwan-for-woocommerce' ) ),
-			'addHeading'       => $this->label( 'unwan_label_add_heading', __( 'Add a new address', 'unwan-for-woocommerce' ) ),
-			'editHeading'      => $this->label( 'unwan_label_edit_heading', __( 'Edit address', 'unwan-for-woocommerce' ) ),
-			'backToAddresses'  => $this->label( 'unwan_label_back', __( 'Back to addresses', 'unwan-for-woocommerce' ) ),
-			'saveAddress'      => $this->label( 'unwan_label_save', __( 'Save address', 'unwan-for-woocommerce' ) ),
-			'cancel'           => $this->label( 'unwan_label_cancel', __( 'Cancel', 'unwan-for-woocommerce' ) ),
-			'emptyHeading'     => $this->label( 'unwan_label_empty_heading', __( 'You haven’t saved an address yet', 'unwan-for-woocommerce' ) ),
-			'emptyDescription' => $this->label(
-				'unwan_label_empty_description',
-				__( 'Add one now and it will be available to both billing and shipping at checkout.', 'unwan-for-woocommerce' )
-			),
+		$defaults = $this->label_defaults();
+		$labels   = array(
+			'pageTitle'        => $this->label( 'unwan_label_account_title', $defaults ),
+			'pageDescription'  => $this->label( 'unwan_label_account_description', $defaults ),
+			'addAddress'       => $this->label( 'unwan_label_add_address', $defaults ),
+			'addHeading'       => $this->label( 'unwan_label_add_heading', $defaults ),
+			'editHeading'      => $this->label( 'unwan_label_edit_heading', $defaults ),
+			'backToAddresses'  => $this->label( 'unwan_label_back', $defaults ),
+			'saveAddress'      => $this->label( 'unwan_label_save', $defaults ),
+			'cancel'           => $this->label( 'unwan_label_cancel', $defaults ),
+			'emptyHeading'     => $this->label( 'unwan_label_empty_heading', $defaults ),
+			'emptyDescription' => $this->label( 'unwan_label_empty_description', $defaults ),
 		);
 
 		$filtered = (array) apply_filters( 'unwan_account_labels', $labels );
@@ -397,12 +486,13 @@ final class Settings {
 	 * @return array<string,string>
 	 */
 	public function get_checkout_picker_labels(): array {
-		$labels = array(
+		$defaults = $this->label_defaults();
+		$labels   = array(
 			'address'                => __( 'Address', 'unwan-for-woocommerce' ),
-			'billingCompactHeading'  => $this->label( 'unwan_label_billing_compact', __( 'Billing to', 'unwan-for-woocommerce' ) ),
-			'shippingCompactHeading' => $this->label( 'unwan_label_shipping_compact', __( 'Delivering to', 'unwan-for-woocommerce' ) ),
-			'billingPanelHeading'    => $this->label( 'unwan_label_billing_panel', __( 'Bill to', 'unwan-for-woocommerce' ) ),
-			'shippingPanelHeading'   => $this->label( 'unwan_label_shipping_panel', __( 'Deliver to', 'unwan-for-woocommerce' ) ),
+			'billingCompactHeading'  => $this->label( 'unwan_label_billing_compact', $defaults ),
+			'shippingCompactHeading' => $this->label( 'unwan_label_shipping_compact', $defaults ),
+			'billingPanelHeading'    => $this->label( 'unwan_label_billing_panel', $defaults ),
+			'shippingPanelHeading'   => $this->label( 'unwan_label_shipping_panel', $defaults ),
 			/* translators: %d: number of saved addresses. */
 			'savedAddress'           => _n( '%d saved address', '%d saved addresses', 1, 'unwan-for-woocommerce' ),
 			/* translators: %d: number of saved addresses. */
@@ -412,11 +502,11 @@ final class Settings {
 			/* translators: %d: number of additional saved addresses not currently shown. */
 			'moreAddresses'          => _n( '%d more saved address', '%d more saved addresses', 2, 'unwan-for-woocommerce' ),
 			'searchLabel'            => __( 'Search saved addresses', 'unwan-for-woocommerce' ),
-			'searchPlaceholder'      => $this->label( 'unwan_label_search', __( 'Filter by street, city or postcode', 'unwan-for-woocommerce' ) ),
+			'searchPlaceholder'      => $this->label( 'unwan_label_search', $defaults ),
 			'noResults'              => __( 'No saved addresses match your search.', 'unwan-for-woocommerce' ),
-			'newAddress'             => $this->label( 'unwan_label_new_address', __( 'Enter a new address', 'unwan-for-woocommerce' ) ),
+			'newAddress'             => $this->label( 'unwan_label_new_address', $defaults ),
 			'default'                => __( 'Default', 'unwan-for-woocommerce' ),
-			'change'                 => $this->label( 'unwan_label_change', __( 'Change', 'unwan-for-woocommerce' ) ),
+			'change'                 => $this->label( 'unwan_label_change', $defaults ),
 		);
 
 		$filtered = (array) apply_filters( 'unwan_checkout_picker_labels', $labels );
@@ -427,13 +517,13 @@ final class Settings {
 	/**
 	 * Read a customer-facing text option without allowing blank UI controls.
 	 *
-	 * @param string $option  Option identifier.
-	 * @param string $default Translated default.
+	 * @param string               $option   Option identifier.
+	 * @param array<string,string> $defaults Translated defaults by option.
 	 * @return string
 	 */
-	private function label( string $option, string $default ): string {
-		$value = sanitize_text_field( (string) get_option( $option, $default ) );
+	private function label( string $option, array $defaults ): string {
+		$value = sanitize_text_field( (string) get_option( $option, '' ) );
 
-		return '' !== $value ? $value : $default;
+		return '' !== $value ? $value : $defaults[ $option ];
 	}
 }

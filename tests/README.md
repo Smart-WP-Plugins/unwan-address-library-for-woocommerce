@@ -79,8 +79,11 @@ against, so a green run is evidence for the `Tested up to` headers in
 | `AddressRepositoryDuplicateTest` | Normalized duplicate detection across defaults and extras |
 | `AddressRepositoryRoleTest` | Lossless default swaps, deletion guards, the extras limit |
 | `AddressRepositoryCheckoutTest` | Checkout option shaping, formatting, request-cache invalidation |
+| `BlocksCheckoutDefaultsTest` | Store API checkout default snapshot/restore, virtual and pickup orders, update mode, no profile save on cart updates |
+| `PrivacyTest` | Personal-data export and erasure of the shared extras |
 | `HooksTest` | Every filter and action in CLAUDE.md's developer API |
-| `SettingsTest` | Accent/scheme/threshold sanitization, label fallbacks |
+| `SettingsTest` | Accent/scheme/threshold sanitization, label fallbacks, label placeholders and default-to-empty saving, `wpml-config.xml` drift |
+| `UpgradeTest` | Once-per-version rewrite flush and removal of saved default labels |
 | `UninstallTest` | Opt-in gating and the settings/uninstall option inventory |
 | `AccountRenderingTest` | My Account markup, escaping, ownership, search visibility |
 | `ClassicCheckoutTest` | Validation, default preservation, checkout address capture |

@@ -1,0 +1,27 @@
+<wpml-config>
+	<!--
+		Customer-facing labels a merchant has customized under
+		WooCommerce > Settings > Accounts & Privacy > Unwan. WPML and Polylang
+		read this file and offer these values for translation. Labels left
+		empty use Unwan's own translated defaults.
+	-->
+	<admin-texts>
+		<key name="unwan_label_account_title" />
+		<key name="unwan_label_account_description" />
+		<key name="unwan_label_add_address" />
+		<key name="unwan_label_add_heading" />
+		<key name="unwan_label_edit_heading" />
+		<key name="unwan_label_back" />
+		<key name="unwan_label_save" />
+		<key name="unwan_label_cancel" />
+		<key name="unwan_label_empty_heading" />
+		<key name="unwan_label_empty_description" />
+		<key name="unwan_label_billing_compact" />
+		<key name="unwan_label_shipping_compact" />
+		<key name="unwan_label_billing_panel" />
+		<key name="unwan_label_shipping_panel" />
+		<key name="unwan_label_search" />
+		<key name="unwan_label_new_address" />
+		<key name="unwan_label_change" />
+	</admin-texts>
+</wpml-config>

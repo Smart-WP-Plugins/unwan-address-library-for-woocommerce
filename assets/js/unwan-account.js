@@ -139,6 +139,38 @@
 			}
 		} );
 
+		// Close an open menu when keyboard focus leaves it (Tab past its last
+		// item), so the open panel never covers the next focused control.
+		root.addEventListener( 'focusout', ( event ) => {
+			const menu = event.target.closest( '[data-unwan-menu]' );
+			const toggle = event.target.closest( '[data-unwan-menu-toggle]' );
+			const owner =
+				toggle ||
+				( menu &&
+					root.querySelector(
+						'[data-unwan-menu-toggle][aria-controls="' +
+							menu.id +
+							'"]'
+					) );
+
+			if ( ! owner || owner.getAttribute( 'aria-expanded' ) !== 'true' ) {
+				return;
+			}
+
+			const ownMenu = document.getElementById(
+				owner.getAttribute( 'aria-controls' ) || ''
+			);
+			const next = event.relatedTarget;
+			if (
+				next &&
+				( owner.contains( next ) || ownMenu?.contains( next ) )
+			) {
+				return;
+			}
+
+			closeMenu( owner );
+		} );
+
 		root.addEventListener( 'submit', ( event ) => {
 			const form = event.target.closest( '[data-unwan-confirm]' );
 			if ( form ) {

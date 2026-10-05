@@ -262,4 +262,69 @@ class SettingsTest extends UnwanTestCase {
 			$this->assertStringContainsString( '%d', $labels[ $key ], "{$key} keeps its %d placeholder" );
 		}
 	}
+
+	/**
+	 * Label fields carry their translated default as a placeholder, never as
+	 * a value WooCommerce would save in the admin's language.
+	 */
+	public function test_label_fields_use_their_default_as_a_placeholder(): void {
+		$labels = array_filter(
+			$this->settings->get_settings( array(), Settings::SECTION ),
+			static function ( $field ) {
+				return 0 === strpos( (string) ( $field['id'] ?? '' ), 'unwan_label_' ) && 'text' === $field['type'];
+			}
+		);
+
+		$this->assertCount( 17, $labels );
+		foreach ( $labels as $field ) {
+			$this->assertSame( '', $field['default'], $field['id'] );
+			$this->assertNotSame( '', $field['placeholder'], $field['id'] );
+		}
+	}
+
+	/**
+	 * Saving a label that matches its default stores it as empty; a changed
+	 * label and other settings are left alone.
+	 */
+	public function test_a_label_matching_its_default_is_saved_empty(): void {
+		$field = array( 'id' => 'unwan_label_change' );
+
+		$this->assertSame( '', $this->settings->sanitize_label( 'Change', $field ) );
+		$this->assertSame( '', $this->settings->sanitize_label( ' Change ', $field ) );
+		$this->assertSame( 'Swap', $this->settings->sanitize_label( 'Swap', $field ) );
+		$this->assertSame( 'Change', $this->settings->sanitize_label( 'Change', array( 'id' => 'woocommerce_other' ) ) );
+	}
+
+	/**
+	 * The save pipeline applies the filter to the label options.
+	 */
+	public function test_the_settings_save_pipeline_empties_default_labels(): void {
+		$value = apply_filters( 'woocommerce_admin_settings_sanitize_option', 'Bill to', array( 'id' => 'unwan_label_billing_panel' ), 'Bill to' );
+
+		$this->assertSame( '', $value );
+		$this->assertSame( 'Bill to', $this->settings->get_checkout_picker_labels()['billingPanelHeading'] );
+	}
+
+	/**
+	 * wpml-config.xml offers every label setting, and only those, to WPML and
+	 * Polylang for translation.
+	 */
+	public function test_wpml_config_lists_every_label_setting(): void {
+		$ids = array();
+		foreach ( $this->settings->get_settings( array(), Settings::SECTION ) as $field ) {
+			if ( 'text' === $field['type'] && 0 === strpos( $field['id'], 'unwan_label_' ) ) {
+				$ids[] = $field['id'];
+			}
+		}
+
+		$xml  = simplexml_load_file( UNWAN_PATH . 'wpml-config.xml' );
+		$keys = array();
+		foreach ( $xml->{'admin-texts'}->key as $key ) {
+			$keys[] = (string) $key['name'];
+		}
+
+		sort( $ids );
+		sort( $keys );
+		$this->assertSame( $ids, $keys );
+	}
 }

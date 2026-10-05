@@ -4,7 +4,7 @@ Tags: woocommerce, address book, multiple addresses, checkout, checkout block
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.6
+Stable tag: 1.0.7
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires Plugins: woocommerce
@@ -148,6 +148,20 @@ It's kept by default. If you'd rather everything be removed, there's a setting f
 
 == Changelog ==
 
+= 1.0.7 =
+
+* Interface text now follows each customer's language. Labels left at their defaults were saved in the language of whoever saved the settings; those saved copies are removed on update, and customized labels can be translated with WPML or Polylang.
+* Fixed checkout not pre-selecting a saved address for customers whose checkout only had the store's default country filled in.
+* Fixed classic checkout hiding a field the order was then refused for, such as an invalid postcode.
+* Fixed classic checkout hiding a field required in the saved address's country when that country differs from the store's.
+* Fixed classic checkout saving an empty address when a field editor removed the street, city and postcode fields.
+* Fixed editing an address that is both the billing and shipping default overwriting details where the two differ, such as the apartment. Each default card now shows its own details.
+* Fixed the My Account address search missing addresses written in accented or non-Latin letters, such as Łódź or Москва.
+* Fixed the Address book page showing "Page not found" on multisite sites after network activation or an update.
+* Fixed "That saved address could not be found" appearing on the next page instead of the one it was about.
+* The address actions menu in My Account now closes when keyboard focus leaves it.
+* Uninstall cleanup on multisite now keeps customers' address books unless every site using Unwan asked for its data to be removed.
+
 = 1.0.6 =
 
 * Fixed checkout getting stuck when the store requires a field, such as phone or company, that a saved address doesn't have. The field now appears so the customer can fill it in.
@@ -210,6 +224,10 @@ It's kept by default. If you'd rather everything be removed, there's a setting f
 * General performance improvements.
 
 == Upgrade Notice ==
+
+= 1.0.7 =
+
+Interface text follows each customer's language again, and fixes for classic checkout, shared billing and shipping defaults, and multisite. Recommended for all stores.
 
 = 1.0.6 =
 

@@ -471,4 +471,28 @@ class AddressRepositoryRoleTest extends UnwanTestCase {
 
 		$this->assertSame( '', $this->repository->get_saved( $this->user_id )[ $id ]['fields']['company'] );
 	}
+
+	/**
+	 * When the two defaults share a name and street they show as one entry,
+	 * but each default card shows its own details, and saving that entry
+	 * applies only what the customer changed onto each default.
+	 */
+	public function test_a_shared_entry_keeps_each_defaults_own_details(): void {
+		$this->repository->save_primary( $this->user_id, 'billing', $this->address( array( 'address_2' => '' ) ) );
+		$this->repository->save_primary( $this->user_id, 'shipping', $this->address( array( 'address_2' => 'Apt 4B' ) ) );
+
+		$billing_entry = $this->repository->get_default_entry( $this->user_id, 'billing' );
+		$this->assertSame( 'Apt 4B', $this->repository->get_default_entry( $this->user_id, 'shipping' )['fields']['address_2'], 'Shipping card shows its own apartment' );
+		$this->assertSame( array( 'billing', 'shipping' ), array_values( (array) $billing_entry['roles'] ), 'One shared entry' );
+
+		$all_keys  = $this->repository->get_field_keys();
+		$submitted = array_merge( $billing_entry['fields'], array( 'phone' => '5550999' ) );
+		$this->repository->save_entry( $this->user_id, (string) $billing_entry['id'], $submitted, array( 'billing', 'shipping' ), $all_keys );
+
+		$this->repository = new Unwan\AddressLibrary\AddressRepository();
+		$this->assertSame( 'Apt 4B', $this->repository->get_primary( $this->user_id, 'shipping' )['address_2'], 'Shipping apartment kept' );
+		$this->assertSame( '', $this->repository->get_primary( $this->user_id, 'billing' )['address_2'] );
+		$this->assertSame( '5550999', $this->repository->get_primary( $this->user_id, 'shipping' )['phone'], 'The change reaches both' );
+		$this->assertSame( '5550999', $this->repository->get_primary( $this->user_id, 'billing' )['phone'] );
+	}
 }

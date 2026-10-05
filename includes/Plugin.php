@@ -75,6 +75,7 @@ final class Plugin {
 		( new Privacy( $repository ) )->register();
 
 		add_action( 'init', array( $this, 'load_textdomain' ) );
+		add_action( 'init', array( $this, 'maybe_upgrade' ), 99 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_styles' ), 99 );
 		add_filter( 'body_class', array( $this, 'add_color_scheme_body_class' ) );
 		add_filter(
@@ -103,6 +104,32 @@ final class Plugin {
 			false,
 			dirname( plugin_basename( UNWAN_FILE ) ) . '/languages'
 		);
+	}
+
+	/**
+	 * Run once per plugin version on each site.
+	 *
+	 * The activation hook runs on one site only when a plugin is network
+	 * activated, and never when the plugin is updated, so this check runs on
+	 * each site's own load instead. Priority 99 follows WooCommerce's endpoint
+	 * registration and the translations loaded above.
+	 *
+	 * - Rebuilds the rewrite rules, so the Address book endpoint never 404s.
+	 * - Removes label settings that only repeat their default text.
+	 *
+	 * @return void
+	 */
+	public function maybe_upgrade(): void {
+		if ( UNWAN_VERSION === get_option( 'unwan_plugin_version' ) ) {
+			return;
+		}
+
+		update_option( 'unwan_plugin_version', UNWAN_VERSION, true );
+		flush_rewrite_rules( false );
+
+		if ( $this->settings instanceof Settings ) {
+			$this->settings->clear_default_labels();
+		}
 	}
 
 	/**
@@ -184,11 +211,13 @@ final class Plugin {
 	/**
 	 * Add the account endpoint and refresh rewrite rules on activation.
 	 *
+	 * The version is recorded by maybe_upgrade() on the next load, so
+	 * reactivating after a manual update still runs the upgrade steps.
+	 *
 	 * @return void
 	 */
 	public static function activate(): void {
 		add_rewrite_endpoint( AccountController::ENDPOINT, EP_ROOT | EP_PAGES );
-		update_option( 'unwan_plugin_version', UNWAN_VERSION, false );
 		flush_rewrite_rules();
 	}
 

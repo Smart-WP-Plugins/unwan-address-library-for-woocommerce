@@ -140,7 +140,9 @@ final class AccountController {
 		} elseif ( '' !== $edit_id ) {
 			$record = $this->repository->get_entry( $user_id, $edit_id );
 			if ( null === $record ) {
-				wc_add_notice( __( 'That saved address could not be found.', 'unwan-for-woocommerce' ), 'error' );
+				// Printed now: WooCommerce has already output this page's
+				// notices, so a queued one would appear on the next page.
+				wc_print_notice( __( 'That saved address could not be found.', 'unwan-for-woocommerce' ), 'error' );
 				$edit_id = '';
 			}
 		}

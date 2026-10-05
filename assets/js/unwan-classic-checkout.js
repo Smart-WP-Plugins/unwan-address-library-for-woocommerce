@@ -102,11 +102,11 @@
 	 * @return {boolean} Whether an address exists.
 	 */
 	function hasAddress( fields ) {
-		return [ 'address_1', 'city', 'postcode', 'country' ].some(
-			function ( key ) {
-				return normalizeValue( fields[ key ] ) !== '';
-			}
-		);
+		// A country on its own is not an address: WooCommerce pre-fills it
+		// from the store's base location or geolocation for every session.
+		return [ 'address_1', 'city', 'postcode' ].some( function ( key ) {
+			return normalizeValue( fields[ key ] ) !== '';
+		} );
 	}
 
 	/**
@@ -123,6 +123,41 @@
 				normalizeValue( saved[ key ] )
 			);
 		} );
+	}
+
+	/**
+	 * Comparable form of one field value.
+	 *
+	 * @param {string} key   Field key.
+	 * @param {*}      value Field value.
+	 * @return {string} Comparable value.
+	 */
+	function comparable( key, value ) {
+		const normalized = normalizeValue( value );
+		return key === 'postcode'
+			? normalized.replace( /\s+/g, '' )
+			: normalized;
+	}
+
+	/**
+	 * Whether every stored field of a saved entry matches the form, including
+	 * company and phone, which the identity match ignores.
+	 *
+	 * @param {Object} current Current checkout fields.
+	 * @param {Object} saved   Saved fields.
+	 * @return {boolean} Whether all stored fields match.
+	 */
+	function allFieldsMatch( current, saved ) {
+		return fieldKeys
+			.filter( function ( key ) {
+				return key !== 'email';
+			} )
+			.every( function ( key ) {
+				return (
+					comparable( key, current[ key ] ) ===
+					comparable( key, saved[ key ] )
+				);
+			} );
 	}
 
 	/**
@@ -343,11 +378,26 @@
 			}
 
 			const key = row.id.slice( type.length + 1, -'_field'.length );
-			const requiredKeys = config.requiredKeys?.[ type ] || [];
+
+			// A value the order will use but the selected address doesn't hold
+			// (WooCommerce can keep another address's company or phone in the
+			// form) must stay visible.
+			const savedFields = addressMap[ state.selection ]?.fields;
 			if (
-				! $row.hasClass( 'validate-required' ) &&
-				requiredKeys.indexOf( key ) === -1
+				savedFields &&
+				comparable( key, $( '#' + type + '_' + key ).val() ) !==
+					comparable( key, savedFields[ key ] )
 			) {
+				return true;
+			}
+
+			// What the order will be validated against for this country.
+			const country = String( $( '#' + type + '_country' ).val() || '' );
+			const requiredKeys = config.requiredKeys?.[ type ]?.[ country ];
+			const required = Array.isArray( requiredKeys )
+				? requiredKeys.indexOf( key ) !== -1
+				: $row.hasClass( 'validate-required' );
+			if ( ! required ) {
 				return false;
 			}
 
@@ -504,11 +554,26 @@
 			} );
 		}
 
-		// A rejected order marks fields invalid; reveal them.
+		// A rejected order names the fields at fault in its notice
+		// (data-id="billing_postcode"). Server-side checks such as postcode
+		// format or a country the store doesn't ship to never mark the row
+		// itself, so reveal every managed row the notice names.
 		$( document.body ).on( 'checkout_error', function () {
-			if ( ! state.isApplying ) {
-				updateFieldVisibility();
+			if ( state.isApplying ) {
+				return;
 			}
+
+			$(
+				'.woocommerce-error [data-id], .woocommerce-NoticeGroup [data-id]'
+			).each( function () {
+				const rowId =
+					String( $( this ).attr( 'data-id' ) || '' ) + '_field';
+				if ( $managedFieldRows.filter( '#' + rowId ).length ) {
+					state.revealed[ rowId ] = true;
+				}
+			} );
+
+			updateFieldVisibility();
 		} );
 
 		// Another script can blank the hidden input (it sits inside
@@ -517,7 +582,10 @@
 			updateHiddenSelection();
 		} );
 
-		if ( storedAddress && storedAddress !== matchingAddress ) {
+		if (
+			storedAddress &&
+			! allFieldsMatch( currentFields, storedAddress.fields || {} )
+		) {
 			// Fill in what WooCommerce forgot on reload (name, company, phone).
 			applySelection( storedAddress.id );
 		} else if (

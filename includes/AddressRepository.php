@@ -464,6 +464,10 @@ final class AddressRepository {
 		$type = $this->normalize_type( $type );
 		foreach ( $this->get_address_book( $user_id ) as $entry ) {
 			if ( in_array( $type, (array) $entry['roles'], true ) ) {
+				// One entry can stand for both defaults when they share a name
+				// and street; each default still shows its own stored details.
+				$entry['fields'] = $this->get_primary( $user_id, $type );
+
 				return $entry;
 			}
 		}
@@ -570,7 +574,8 @@ final class AddressRepository {
 		$existing        = 'new' === $id ? null : $this->get_entry( $user_id, $id );
 		$existing_roles  = is_array( $existing ) ? (array) $existing['roles'] : array();
 		$existing_fields = is_array( $existing ) ? (array) $existing['fields'] : array();
-		$complete        = $this->carry_unrendered( $existing_fields, $fields, $rendered_keys );
+		$changed_keys    = $this->changed_keys( $existing_fields, $fields, $rendered_keys, is_array( $existing ) );
+		$complete        = $this->overlay_fields( $existing_fields, $fields, $changed_keys );
 
 		if ( 'new' !== $id && null === $existing ) {
 			return new \WP_Error(
@@ -586,12 +591,14 @@ final class AddressRepository {
 		foreach ( $roles as $role ) {
 			if ( in_array( $role, $existing_roles, true ) ) {
 				// Editing an address in a role it already owns is an in-place
-				// update, not a role reassignment. Fields the editor did not
-				// show keep that role's own stored values.
+				// update, not a role reassignment. Only the fields the customer
+				// changed are applied, onto that role's own stored values: one
+				// entry can stand for both defaults while they differ in, say,
+				// the apartment.
 				$this->save_primary(
 					$user_id,
 					$role,
-					$this->carry_unrendered( $this->get_persisted_primary( $user_id, $role ), $fields, $rendered_keys )
+					$this->overlay_fields( $this->get_persisted_primary( $user_id, $role ), $fields, $changed_keys )
 				);
 			} else {
 				$this->assign_primary( $user_id, $role, $complete );
@@ -662,32 +669,61 @@ final class AddressRepository {
 	}
 
 	/**
-	 * Keep stored values for fields an editor did not render.
+	 * Field keys a save should apply.
 	 *
-	 * A field editor or the store's country rules can remove a core field
-	 * from the form. Saving must not blank what the address already holds.
+	 * Without a rendered-field list every key is applied. Otherwise only the
+	 * rendered keys, and for an existing entry only those whose value the
+	 * customer changed. A field editor or the store's country rules can remove
+	 * core fields from the form, and an entry can stand for both defaults
+	 * while they differ, so nothing the customer did not touch is overwritten.
 	 *
-	 * @param array<string,mixed> $stored        Stored fields for the entry.
+	 * @param array<string,mixed> $displayed     Fields the editor showed.
 	 * @param array<string,mixed> $fields        Submitted fields.
 	 * @param string[]|null       $rendered_keys Field keys the editor rendered.
+	 * @param bool                $is_existing   Whether an existing entry is edited.
+	 * @return string[]
+	 */
+	private function changed_keys( array $displayed, array $fields, ?array $rendered_keys, bool $is_existing ): array {
+		if ( null === $rendered_keys ) {
+			return $this->get_field_keys();
+		}
+
+		$keys = array_values( array_intersect( $this->get_field_keys(), $rendered_keys ) );
+
+		if ( ! $is_existing ) {
+			return $keys;
+		}
+
+		$displayed = $this->sanitize_fields( $displayed );
+		$fields    = $this->sanitize_fields( $fields );
+
+		return array_values(
+			array_filter(
+				$keys,
+				static function ( $key ) use ( $displayed, $fields ) {
+					return $displayed[ $key ] !== $fields[ $key ];
+				}
+			)
+		);
+	}
+
+	/**
+	 * Apply the given keys from submitted fields onto stored fields.
+	 *
+	 * @param array<string,mixed> $stored Stored fields.
+	 * @param array<string,mixed> $fields Submitted fields.
+	 * @param string[]            $keys   Keys to apply.
 	 * @return array<string,string>
 	 */
-	private function carry_unrendered( array $stored, array $fields, ?array $rendered_keys ): array {
+	private function overlay_fields( array $stored, array $fields, array $keys ): array {
+		$stored = $this->sanitize_fields( $stored );
 		$fields = $this->sanitize_fields( $fields );
 
-		if ( null === $rendered_keys ) {
-			return $fields;
+		foreach ( $keys as $key ) {
+			$stored[ $key ] = $fields[ $key ];
 		}
 
-		$stored = $this->sanitize_fields( $stored );
-
-		foreach ( $this->get_field_keys() as $key ) {
-			if ( ! in_array( $key, $rendered_keys, true ) ) {
-				$fields[ $key ] = $stored[ $key ];
-			}
-		}
-
-		return $fields;
+		return $this->sanitize_fields( $stored );
 	}
 
 	/**

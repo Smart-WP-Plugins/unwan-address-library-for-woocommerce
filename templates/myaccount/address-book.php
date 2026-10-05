@@ -142,7 +142,9 @@ defined( 'ABSPATH' ) || exit;
 						$unwan_street      = $repository->format_street_text( $unwan_fields );
 						$unwan_name        = $repository->get_recipient_name( $unwan_fields );
 						$unwan_location    = $repository->format_location_text( $unwan_fields );
-						$unwan_search_text = strtolower( implode( ' ', array( $unwan_street, $unwan_name, $unwan_location, (string) ( $unwan_fields['postcode'] ?? '' ) ) ) );
+						$unwan_search_text = implode( ' ', array( $unwan_street, $unwan_name, $unwan_location, (string) ( $unwan_fields['postcode'] ?? '' ) ) );
+						// Multibyte-aware, so "Łódź" or "Москва" are found as typed.
+						$unwan_search_text = function_exists( 'mb_strtolower' ) ? mb_strtolower( $unwan_search_text, 'UTF-8' ) : strtolower( $unwan_search_text );
 						$unwan_menu_id     = 'unwan-address-menu-' . sanitize_html_class( (string) $unwan_entry['id'] );
 						?>
 						<article class="unwan-address-item" data-unwan-address-item data-unwan-search="<?php echo esc_attr( $unwan_search_text ); ?>">

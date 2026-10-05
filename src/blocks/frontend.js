@@ -162,8 +162,10 @@ const addressMatches = ( current = {}, expected = {}, keys = MATCH_KEYS ) =>
  * @param {Object} fields Address values.
  * @return {boolean} Whether a cart address exists.
  */
+// A country on its own is not an address: WooCommerce pre-fills it from the
+// store's base location or geolocation for every new session.
 const hasAddress = ( fields = {} ) =>
-	[ 'address_1', 'city', 'postcode', 'country' ].some(
+	[ 'address_1', 'city', 'postcode' ].some(
 		( key ) => normalizeValue( fields[ key ] ) !== ''
 	);
 

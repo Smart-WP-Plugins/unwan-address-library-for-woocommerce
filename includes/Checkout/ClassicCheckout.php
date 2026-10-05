@@ -254,7 +254,9 @@ final class ClassicCheckout {
 			$selection = sanitize_key( (string) ( $data[ "unwan_{$type}_address_id" ] ?? '' ) );
 			$fields    = $this->extract_address( $data, $type );
 
-			if ( 'new' !== $selection ) {
+			// An address with no street, city or postcode (for example a store
+			// whose field editor removed them) is not one to keep.
+			if ( 'new' !== $selection || ! $this->repository->has_address( $fields ) ) {
 				continue;
 			}
 
@@ -289,11 +291,14 @@ final class ClassicCheckout {
 		$data    = array(
 			'types'           => array(),
 			'fieldKeys'       => $this->repository->get_field_keys(),
-			'requiredKeys'    => $this->get_required_keys(),
+			'requiredKeys'    => array(),
 			'baseCountry'     => WC()->countries->get_base_country(),
 			'searchThreshold' => $this->settings->get_address_search_threshold(),
 			'labels'          => $this->settings->get_checkout_picker_labels(),
 		);
+
+		// Both selectors offer the same address book.
+		$book = array();
 
 		foreach ( array( 'billing', 'shipping' ) as $type ) {
 			if ( ! $this->settings->is_enabled( $type ) ) {
@@ -306,7 +311,10 @@ final class ClassicCheckout {
 				'addresses' => $addresses,
 				'canSave'   => $this->repository->can_add( $user_id ),
 			);
+			$book                   = $addresses;
 		}
+
+		$data['requiredKeys'] = $this->get_required_keys( $book );
 
 		/**
 		 * Filter data exposed to the classic checkout picker.
@@ -389,32 +397,45 @@ final class ClassicCheckout {
 	}
 
 	/**
-	 * Managed address fields the checkout requires, per address type.
+	 * Managed address fields the checkout requires, per address type and
+	 * country.
 	 *
-	 * This is WooCommerce's own checkout field configuration, including field
-	 * editors' overrides, which is what the order is validated against. The
-	 * required class on the page is not reliable on its own: WooCommerce's
-	 * country rules remove it from some fields on load and a field editor may
-	 * only add it back after a later checkout update.
+	 * WooCommerce validates an order against the address fields for the posted
+	 * country, including field editors' overrides (woocommerce_billing_fields /
+	 * woocommerce_shipping_fields), so the same fields are computed here for
+	 * every country in the customer's address book. The required class on the
+	 * page is not reliable on its own: WooCommerce's country rules remove it
+	 * from some fields on load (phone included), and a field editor may only add
+	 * it back after a later checkout update.
 	 *
-	 * @return array<string,string[]>
+	 * @param array<int,array<string,mixed>> $addresses Checkout options.
+	 * @return array<string,array<string,string[]>>
 	 */
-	private function get_required_keys(): array {
+	private function get_required_keys( array $addresses ): array {
 		$required = array(
 			'billing'  => array(),
 			'shipping' => array(),
 		);
 
-		if ( ! function_exists( 'WC' ) || ! WC()->checkout() ) {
+		if ( ! function_exists( 'WC' ) || ! WC()->countries ) {
 			return $required;
 		}
 
-		foreach ( array_keys( $required ) as $type ) {
-			$fields = (array) WC()->checkout()->get_checkout_fields( $type );
+		$countries = array( WC()->countries->get_base_country() );
+		foreach ( $addresses as $address ) {
+			$countries[] = (string) ( $address['fields']['country'] ?? '' );
+		}
+		$countries = array_unique( array_filter( $countries ) );
 
-			foreach ( $this->repository->get_field_keys() as $key ) {
-				if ( ! empty( $fields[ "{$type}_{$key}" ]['required'] ) ) {
-					$required[ $type ][] = $key;
+		foreach ( array_keys( $required ) as $type ) {
+			foreach ( $countries as $country ) {
+				$fields = WC()->countries->get_address_fields( $country, "{$type}_" );
+
+				$required[ $type ][ $country ] = array();
+				foreach ( $this->repository->get_field_keys() as $key ) {
+					if ( ! empty( $fields[ "{$type}_{$key}" ]['required'] ) ) {
+						$required[ $type ][ $country ][] = $key;
+					}
 				}
 			}
 		}

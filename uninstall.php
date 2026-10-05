@@ -64,8 +64,10 @@ function unwan_uninstall_current_site(): bool {
 $unwan_remove_customer_data = false;
 
 if ( is_multisite() ) {
-	$unwan_offset = 0;
-	$unwan_limit  = 100;
+	$unwan_offset              = 0;
+	$unwan_limit               = 100;
+	$unwan_any_site_opted_in   = false;
+	$unwan_every_site_opted_in = true;
 
 	do {
 		$unwan_site_ids = get_sites(
@@ -78,13 +80,24 @@ if ( is_multisite() ) {
 
 		foreach ( $unwan_site_ids as $unwan_site_id ) {
 			switch_to_blog( (int) $unwan_site_id );
-			$unwan_remove_customer_data = unwan_uninstall_current_site() || $unwan_remove_customer_data;
+			$unwan_site_uses_unwan = false !== get_option( 'unwan_plugin_version', false );
+			$unwan_site_opted_in   = unwan_uninstall_current_site();
+
+			if ( $unwan_site_opted_in ) {
+				$unwan_any_site_opted_in = true;
+			} elseif ( $unwan_site_uses_unwan ) {
+				$unwan_every_site_opted_in = false;
+			}
 			restore_current_blog();
 		}
 
 		$unwan_offset    += $unwan_limit;
 		$unwan_site_count = count( $unwan_site_ids );
 	} while ( $unwan_site_count === $unwan_limit );
+
+	// Address books are user meta, shared by every site in the network. Keep
+	// them unless every site that uses Unwan asked for its data to be removed.
+	$unwan_remove_customer_data = $unwan_any_site_opted_in && $unwan_every_site_opted_in;
 } else {
 	$unwan_remove_customer_data = unwan_uninstall_current_site();
 }
