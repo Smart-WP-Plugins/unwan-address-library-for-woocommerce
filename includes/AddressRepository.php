@@ -1093,6 +1093,11 @@ final class AddressRepository {
 	/**
 	 * Build the normalized identity used to reject duplicates.
 	 *
+	 * The postcode is part of the identity, so an address that corrects only
+	 * the postcode is kept as its own entry instead of being folded into the
+	 * old one. Spaces in the postcode are ignored because WooCommerce
+	 * reformats some (for example "SW1A2AA" to "SW1A 2AA").
+	 *
 	 * @param array<string,mixed> $fields Address fields.
 	 * @return string Empty when no street address is present.
 	 */
@@ -1110,6 +1115,7 @@ final class AddressRepository {
 				$this->normalize_duplicate_part( $fields['first_name'] ?? '' ),
 				$this->normalize_duplicate_part( $fields['last_name'] ?? '' ),
 				$address,
+				str_replace( ' ', '', $this->normalize_duplicate_part( $fields['postcode'] ?? '' ) ),
 			)
 		);
 	}

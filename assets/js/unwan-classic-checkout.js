@@ -119,8 +119,8 @@
 	function addressesMatch( current, saved ) {
 		return matchKeys.every( function ( key ) {
 			return (
-				normalizeValue( current[ key ] ) ===
-				normalizeValue( saved[ key ] )
+				comparable( key, current[ key ] ) ===
+				comparable( key, saved[ key ] )
 			);
 		} );
 	}

@@ -4,7 +4,7 @@ Tags: woocommerce, address book, multiple addresses, checkout, checkout block
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.7
+Stable tag: 1.0.8
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires Plugins: woocommerce
@@ -124,7 +124,7 @@ Not unless you turn that on. By default, picking a saved address just uses it fo
 
 = Are new checkout addresses saved automatically? =
 
-Yes, by default (you can turn this off). If someone re-enters an address that's already saved, Unwan reuses it instead of creating a duplicate.
+Yes, by default (you can turn this off). If someone re-enters an address that's already saved (same name, street and postcode), Unwan reuses it instead of creating a duplicate.
 
 = What happens to the old default address? =
 
@@ -147,6 +147,10 @@ At checkout, those fields appear as usual, handled by WooCommerce and your field
 It's kept by default. If you'd rather everything be removed, there's a setting for that under **WooCommerce > Settings > Accounts & Privacy > Unwan**. Either way, your customers' regular WooCommerce billing and shipping details are never touched.
 
 == Changelog ==
+
+= 1.0.8 =
+
+* The postcode is now part of duplicate detection. An address that corrects only the postcode is saved as its own entry instead of being folded into the old one, and addresses that differ only in postcode both appear in the address book. Spaces and capitals in postcodes are still ignored.
 
 = 1.0.7 =
 
@@ -224,6 +228,10 @@ It's kept by default. If you'd rather everything be removed, there's a setting f
 * General performance improvements.
 
 == Upgrade Notice ==
+
+= 1.0.8 =
+
+Addresses that differ only in postcode are now kept as separate entries, so a corrected postcode is never dropped.
 
 = 1.0.7 =
 

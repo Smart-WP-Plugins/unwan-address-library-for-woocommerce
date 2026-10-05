@@ -83,11 +83,72 @@ class AddressRepositoryDuplicateTest extends UnwanTestCase {
 					'address_1'  => '12 Maple Street',
 					'address_2'  => 'Suite 900',
 					'city'       => 'Metropolis',
-					'postcode'   => '11111',
 					'phone'      => '5559999',
 					'company'    => 'Somewhere Else',
 				),
 			),
+			'postcode spacing'    => array(
+				array(
+					'first_name' => 'Renée',
+					'last_name'  => 'Lovelace',
+					'address_1'  => '12 Maple Street',
+					'postcode'   => ' 902 10 ',
+				),
+			),
+		);
+	}
+
+	/**
+	 * The same name and street with another postcode is a distinct entry, so
+	 * a corrected postcode is kept instead of being folded into the old one.
+	 */
+	public function test_a_different_postcode_is_not_a_duplicate(): void {
+		$first  = $this->repository->create( $this->user_id, $this->address() );
+		$second = $this->repository->create( $this->user_id, $this->address( array( 'postcode' => '90211' ) ) );
+
+		$this->assertNotSame( $first, $second );
+		$this->assertCount( 2, $this->repository->get_saved( $this->user_id ) );
+		$this->assertSame( '', $this->repository->find_duplicate( $this->user_id, $this->address( array( 'postcode' => '90212' ) ) ) );
+	}
+
+	/**
+	 * Postcodes compare without case or spaces.
+	 */
+	public function test_postcodes_compare_without_case_or_spaces(): void {
+		$uk    = array(
+			'country'  => 'GB',
+			'state'    => '',
+			'city'     => 'London',
+			'postcode' => 'SW1A 2AA',
+		);
+		$first = $this->repository->create( $this->user_id, $this->address( $uk ) );
+
+		$this->assertSame(
+			$first,
+			$this->repository->find_duplicate( $this->user_id, $this->address( array_merge( $uk, array( 'postcode' => 'sw1a2aa' ) ) ) )
+		);
+	}
+
+	/**
+	 * Defaults and extras that differ only in postcode all stay visible in
+	 * the address book.
+	 */
+	public function test_entries_differing_only_in_postcode_are_listed_separately(): void {
+		$this->repository->save_primary( $this->user_id, 'billing', $this->address() );
+		$this->repository->save_primary( $this->user_id, 'shipping', $this->address( array( 'postcode' => '90211' ) ) );
+		$this->repository->create( $this->user_id, $this->address( array( 'postcode' => '90212' ) ) );
+
+		$book = $this->repository->get_address_book( $this->user_id );
+
+		$this->assertCount( 3, $book );
+		$this->assertSame(
+			array( '90210', '90211', '90212' ),
+			array_map(
+				static function ( $entry ) {
+					return $entry['fields']['postcode'];
+				},
+				$book
+			)
 		);
 	}
 
