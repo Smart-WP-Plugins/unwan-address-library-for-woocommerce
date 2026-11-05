@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Unwan – Multiple Address Book for WooCommerce 1.0.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/unwan-for-woocommerce/\n"
-"POT-Creation-Date: 2026-10-04 05:43+0530\n"
+"POT-Creation-Date: 2026-11-05 18:24+0530\n"
 "PO-Revision-Date: 2026-08-14 00:34+0530\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -52,7 +52,7 @@ msgstr "住所を削除しました。"
 msgid "Default address updated."
 msgstr "デフォルトの住所を更新しました。"
 
-#: includes/AddressRepository.php:350 includes/Admin/Settings.php:491
+#: includes/AddressRepository.php:350 includes/Admin/Settings.php:515
 msgid "Address"
 msgstr "住所"
 
@@ -69,10 +69,18 @@ msgid "Change this address’s default roles before deleting it."
 msgstr "削除する前に、この住所のデフォルト役割を変更してください。"
 
 #. translators: 1: recipient name, 2: formatted postal address.
-#: includes/AddressRepository.php:927
+#: includes/AddressRepository.php:927 includes/Admin/OrderAddresses.php:161
 #, php-format
 msgid "%1$s (default) — %2$s"
 msgstr "%1$s (デフォルト) — %2$s"
+
+#: includes/Admin/OrderAddresses.php:119
+msgid "Saved addresses"
+msgstr "保存済みの住所"
+
+#: includes/Admin/OrderAddresses.php:120
+msgid "Choose a saved address…"
+msgstr "保存済みの住所を選択…"
 
 #: includes/Admin/Settings.php:45
 msgid "Unwan"
@@ -99,240 +107,248 @@ msgid "Let customers choose any address-book entry for shipping"
 msgstr "配送先としてアドレス帳の任意の住所を選べるようにする"
 
 #: includes/Admin/Settings.php:85
+msgid "Admin order dropdown"
+msgstr "管理画面の注文用ドロップダウン"
+
+#: includes/Admin/Settings.php:86
+msgid "Let staff fill an order’s billing or shipping address from the customer’s saved addresses on the admin order screen"
+msgstr "管理画面の注文画面で、顧客の保存済みの住所から注文の請求先住所または配送先住所をスタッフが入力できるようにします"
+
+#: includes/Admin/Settings.php:92
 msgid "Additional address limit"
 msgstr "追加住所の上限"
 
-#: includes/Admin/Settings.php:86
+#: includes/Admin/Settings.php:93
 msgid "Maximum additional addresses per customer. Billing and shipping defaults are not counted. Use 0 for unlimited."
 msgstr "顧客ごとの追加住所の上限数です。デフォルトの請求先住所と配送先住所は含みません。0 で無制限になります。"
 
-#: includes/Admin/Settings.php:97
+#: includes/Admin/Settings.php:104
 msgid "Address search threshold"
 msgstr "住所検索のしきい値"
 
-#: includes/Admin/Settings.php:98
+#: includes/Admin/Settings.php:105
 msgid "Show search in checkout and My Account when a customer has more than this many addresses. Use 0 to always show it."
 msgstr "顧客の住所がこの件数を超えたとき、注文手続きとマイアカウントに検索を表示します。0 で常に表示します。"
 
-#: includes/Admin/Settings.php:110
+#: includes/Admin/Settings.php:117
 msgid "Save checkout addresses"
 msgstr "注文手続きの住所を保存"
 
-#: includes/Admin/Settings.php:111
+#: includes/Admin/Settings.php:118
 msgid "Add a new address entered at checkout to the customer’s address book"
 msgstr "注文手続きで入力された新しい住所を顧客のアドレス帳に追加する"
 
-#: includes/Admin/Settings.php:117
+#: includes/Admin/Settings.php:124
 msgid "New address defaults"
 msgstr "新しい住所のデフォルト設定"
 
-#: includes/Admin/Settings.php:118
+#: includes/Admin/Settings.php:125
 msgid "Choose whether a new address entered at checkout should replace the matching billing or shipping profile default."
 msgstr "注文手続きで入力された新しい住所を、対応するプロフィールの請求先または配送先のデフォルトと置き換えるかどうかを選択します。"
 
-#: includes/Admin/Settings.php:123
+#: includes/Admin/Settings.php:130
 msgid "Keep the current defaults"
 msgstr "現在のデフォルトを維持する"
 
-#: includes/Admin/Settings.php:124
+#: includes/Admin/Settings.php:131
 msgid "Make the new address the matching default"
 msgstr "新しい住所を対応するデフォルトにする"
 
-#: includes/Admin/Settings.php:132
+#: includes/Admin/Settings.php:139
 msgid "Appearance"
 msgstr "外観"
 
-#: includes/Admin/Settings.php:133
+#: includes/Admin/Settings.php:140
 msgid "These values are exposed through scoped Unwan CSS variables and do not restyle the active theme."
 msgstr "これらの値は Unwan 専用のスコープ付き CSS 変数として提供され、有効なテーマのスタイルは変更しません。"
 
-#: includes/Admin/Settings.php:138
+#: includes/Admin/Settings.php:145
 msgid "Color mode"
 msgstr "カラーモード"
 
-#: includes/Admin/Settings.php:143
+#: includes/Admin/Settings.php:150
 msgid "Light"
 msgstr "ライト"
 
-#: includes/Admin/Settings.php:144
+#: includes/Admin/Settings.php:151
 msgid "Dark"
 msgstr "ダーク"
 
-#: includes/Admin/Settings.php:145
+#: includes/Admin/Settings.php:152
 msgid "Follow the customer’s device"
 msgstr "顧客の端末に合わせる"
 
-#: includes/Admin/Settings.php:149
+#: includes/Admin/Settings.php:156
 msgid "Accent color"
 msgstr "アクセントカラー"
 
-#: includes/Admin/Settings.php:160
+#: includes/Admin/Settings.php:167
 msgid "Text and labels"
 msgstr "テキストとラベル"
 
-#: includes/Admin/Settings.php:161
+#: includes/Admin/Settings.php:168
 msgid "Customize customer-facing interface copy. Leave a field empty to show the default text, translated into each customer’s language."
 msgstr "顧客に表示されるテキストをカスタマイズします。空欄のままにすると、各顧客の言語に翻訳された既定のテキストが表示されます。"
 
-#: includes/Admin/Settings.php:165
+#: includes/Admin/Settings.php:172
 msgid "Address-book page title"
 msgstr "アドレス帳のページタイトル"
 
-#: includes/Admin/Settings.php:166
+#: includes/Admin/Settings.php:173
 msgid "Address-book description"
 msgstr "アドレス帳の説明"
 
-#: includes/Admin/Settings.php:167
+#: includes/Admin/Settings.php:174
 msgid "Add-address button"
 msgstr "住所追加ボタン"
 
-#: includes/Admin/Settings.php:168
+#: includes/Admin/Settings.php:175
 msgid "Add-address heading"
 msgstr "住所追加の見出し"
 
-#: includes/Admin/Settings.php:169
+#: includes/Admin/Settings.php:176
 msgid "Edit-address heading"
 msgstr "住所編集の見出し"
 
-#: includes/Admin/Settings.php:170
+#: includes/Admin/Settings.php:177
 msgid "Back link"
 msgstr "戻るリンク"
 
-#: includes/Admin/Settings.php:171
+#: includes/Admin/Settings.php:178
 msgid "Save button"
 msgstr "保存ボタン"
 
-#: includes/Admin/Settings.php:172
+#: includes/Admin/Settings.php:179
 msgid "Cancel action"
 msgstr "キャンセル操作"
 
-#: includes/Admin/Settings.php:173
+#: includes/Admin/Settings.php:180
 msgid "Empty-state heading"
 msgstr "空の状態の見出し"
 
-#: includes/Admin/Settings.php:174
+#: includes/Admin/Settings.php:181
 msgid "Empty-state description"
 msgstr "空の状態の説明"
 
-#: includes/Admin/Settings.php:175
+#: includes/Admin/Settings.php:182
 msgid "Billing summary heading"
 msgstr "請求先サマリーの見出し"
 
-#: includes/Admin/Settings.php:176
+#: includes/Admin/Settings.php:183
 msgid "Shipping summary heading"
 msgstr "配送先サマリーの見出し"
 
-#: includes/Admin/Settings.php:177
+#: includes/Admin/Settings.php:184
 msgid "Billing picker heading"
 msgstr "請求先セレクターの見出し"
 
-#: includes/Admin/Settings.php:178
+#: includes/Admin/Settings.php:185
 msgid "Shipping picker heading"
 msgstr "配送先セレクターの見出し"
 
-#: includes/Admin/Settings.php:179
+#: includes/Admin/Settings.php:186
 msgid "Search placeholder"
 msgstr "検索のプレースホルダー"
 
-#: includes/Admin/Settings.php:180
+#: includes/Admin/Settings.php:187
 msgid "New-address choice"
 msgstr "新しい住所の選択肢"
 
-#: includes/Admin/Settings.php:181
+#: includes/Admin/Settings.php:188
 msgid "Change action"
 msgstr "変更操作"
 
-#: includes/Admin/Settings.php:187
+#: includes/Admin/Settings.php:194
 msgid "Data removal"
 msgstr "データの削除"
 
-#: includes/Admin/Settings.php:188
+#: includes/Admin/Settings.php:195
 msgid "Choose whether customer address-book data and plugin settings should remain after uninstalling Unwan."
 msgstr "Unwan をアンインストールした後も、顧客のアドレス帳データとプラグイン設定を残すかどうかを選択します。"
 
-#: includes/Admin/Settings.php:193
+#: includes/Admin/Settings.php:200
 msgid "Uninstall cleanup"
 msgstr "アンインストール時のクリーンアップ"
 
-#: includes/Admin/Settings.php:194
+#: includes/Admin/Settings.php:201
 msgid "Permanently remove all Unwan settings and additional customer addresses when the plugin is deleted"
 msgstr "プラグインの削除時に、Unwan のすべての設定と顧客の追加住所を完全に削除する"
 
-#: includes/Admin/Settings.php:195
+#: includes/Admin/Settings.php:202
 msgid "WooCommerce billing and shipping profile addresses are not removed."
 msgstr "WooCommerce プロフィールの請求先住所と配送先住所は削除されません。"
 
-#: includes/Admin/Settings.php:334
+#: includes/Admin/Settings.php:341
 msgid "Addresses"
 msgstr "住所一覧"
 
-#: includes/Admin/Settings.php:335
+#: includes/Admin/Settings.php:342
 msgid "Your billing default, shipping default, and additional addresses form one address book. Every address can be used anywhere at checkout."
 msgstr "デフォルトの請求先住所、デフォルトの配送先住所、および追加の住所は 1 つのアドレス帳にまとまります。どの住所も注文手続きのどこでも使用できます。"
 
-#: includes/Admin/Settings.php:336
+#: includes/Admin/Settings.php:343
 msgid "Add new address"
 msgstr "住所を追加"
 
-#: includes/Admin/Settings.php:337
+#: includes/Admin/Settings.php:344
 msgid "Add a new address"
 msgstr "新しい住所を追加"
 
-#: includes/Admin/Settings.php:338
+#: includes/Admin/Settings.php:345
 msgid "Edit address"
 msgstr "住所を編集"
 
-#: includes/Admin/Settings.php:339
+#: includes/Admin/Settings.php:346
 msgid "Back to addresses"
 msgstr "住所一覧に戻る"
 
-#: includes/Admin/Settings.php:340
+#: includes/Admin/Settings.php:347
 msgid "Save address"
 msgstr "住所を保存"
 
-#: includes/Admin/Settings.php:341
+#: includes/Admin/Settings.php:348
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: includes/Admin/Settings.php:342
+#: includes/Admin/Settings.php:349
 msgid "You haven’t saved an address yet"
 msgstr "まだ住所が保存されていません"
 
-#: includes/Admin/Settings.php:343
+#: includes/Admin/Settings.php:350
 msgid "Add one now and it will be available to both billing and shipping at checkout."
 msgstr "今すぐ追加すると、注文手続きで請求先にも配送先にも使えるようになります。"
 
-#: includes/Admin/Settings.php:344
+#: includes/Admin/Settings.php:351
 msgid "Billing to"
 msgstr "ご請求先"
 
-#: includes/Admin/Settings.php:345
+#: includes/Admin/Settings.php:352
 msgid "Delivering to"
 msgstr "お届け先"
 
-#: includes/Admin/Settings.php:346
+#: includes/Admin/Settings.php:353
 msgid "Bill to"
 msgstr "請求先住所"
 
-#: includes/Admin/Settings.php:347
+#: includes/Admin/Settings.php:354
 msgid "Deliver to"
 msgstr "配送先住所"
 
-#: includes/Admin/Settings.php:348
+#: includes/Admin/Settings.php:355
 msgid "Filter by street, city or postcode"
 msgstr "番地、市区町村、郵便番号で絞り込む"
 
-#: includes/Admin/Settings.php:349
+#: includes/Admin/Settings.php:356
 msgid "Enter a new address"
 msgstr "新しい住所を入力"
 
-#: includes/Admin/Settings.php:350 templates/myaccount/address-book.php:83
+#: includes/Admin/Settings.php:357 templates/myaccount/address-book.php:83
 msgid "Change"
 msgstr "変更"
 
 #. translators: %d: number of saved addresses.
 #. translators: %d: total number of unique addresses.
-#: includes/Admin/Settings.php:497 includes/Admin/Settings.php:499
+#: includes/Admin/Settings.php:521 includes/Admin/Settings.php:523
 #: templates/myaccount/address-book.php:95
 #, php-format
 msgid "%d saved address"
@@ -340,21 +356,21 @@ msgid_plural "%d saved addresses"
 msgstr[0] "保存済みの住所 %d 件"
 
 #. translators: %d: number of additional saved addresses not currently shown.
-#: includes/Admin/Settings.php:501 includes/Admin/Settings.php:503
+#: includes/Admin/Settings.php:525 includes/Admin/Settings.php:527
 #, php-format
 msgid "%d more saved address"
 msgid_plural "%d more saved addresses"
 msgstr[0] "他に保存済みの住所 %d 件"
 
-#: includes/Admin/Settings.php:504
+#: includes/Admin/Settings.php:528
 msgid "Search saved addresses"
 msgstr "保存済みの住所を検索"
 
-#: includes/Admin/Settings.php:506
+#: includes/Admin/Settings.php:530
 msgid "No saved addresses match your search."
 msgstr "検索条件に一致する保存済みの住所はありません。"
 
-#: includes/Admin/Settings.php:508
+#: includes/Admin/Settings.php:532
 msgid "Default"
 msgstr "デフォルト"
 
@@ -370,7 +386,7 @@ msgstr "配送先として選択されたアドレス帳の項目。"
 msgid "Please choose a valid saved address."
 msgstr "有効な保存済みの住所を選択してください。"
 
-#: includes/Plugin.php:149
+#: includes/Plugin.php:151
 msgid "Settings"
 msgstr "設定"
 

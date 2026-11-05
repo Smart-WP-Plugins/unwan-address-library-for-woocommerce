@@ -805,12 +805,16 @@ const AddressSelector = ( { checkoutExtensionData, type } ) => {
 		useShippingAsBilling,
 	] );
 
-	// A placed order ends this choice; the next checkout starts fresh.
+	// A placed order ends the choices of both types; the next checkout starts
+	// fresh. Both, because WooCommerce unmounts the billing step when
+	// "Use same address for billing" is on, so its own selector cannot clear
+	// a billing choice remembered earlier in this tab.
 	useEffect( () => {
 		if ( checkoutComplete ) {
-			storeSelection( type, '' );
+			storeSelection( 'billing', '' );
+			storeSelection( 'shipping', '' );
 		}
-	}, [ checkoutComplete, type ] );
+	}, [ checkoutComplete ] );
 
 	useEffect( () => {
 		if ( ! shouldRender ) {

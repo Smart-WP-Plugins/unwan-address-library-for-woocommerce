@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Unwan – Multiple Address Book for WooCommerce 1.0.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/unwan-for-woocommerce/\n"
-"POT-Creation-Date: 2026-10-04 05:43+0530\n"
+"POT-Creation-Date: 2026-11-05 18:24+0530\n"
 "PO-Revision-Date: 2026-08-14 00:34+0530\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -52,7 +52,7 @@ msgstr "Endereço excluído."
 msgid "Default address updated."
 msgstr "Endereço padrão atualizado."
 
-#: includes/AddressRepository.php:350 includes/Admin/Settings.php:491
+#: includes/AddressRepository.php:350 includes/Admin/Settings.php:515
 msgid "Address"
 msgstr "Endereço"
 
@@ -69,10 +69,18 @@ msgid "Change this address’s default roles before deleting it."
 msgstr "Altere as funções padrão deste endereço antes de excluí-lo."
 
 #. translators: 1: recipient name, 2: formatted postal address.
-#: includes/AddressRepository.php:927
+#: includes/AddressRepository.php:927 includes/Admin/OrderAddresses.php:161
 #, php-format
 msgid "%1$s (default) — %2$s"
 msgstr "%1$s (padrão) — %2$s"
+
+#: includes/Admin/OrderAddresses.php:119
+msgid "Saved addresses"
+msgstr "Endereços salvos"
+
+#: includes/Admin/OrderAddresses.php:120
+msgid "Choose a saved address…"
+msgstr "Escolha um endereço salvo…"
 
 #: includes/Admin/Settings.php:45
 msgid "Unwan"
@@ -99,240 +107,248 @@ msgid "Let customers choose any address-book entry for shipping"
 msgstr "Permitir que os clientes escolham qualquer endereço do catálogo para entrega"
 
 #: includes/Admin/Settings.php:85
+msgid "Admin order dropdown"
+msgstr "Lista suspensa nos pedidos do administrador"
+
+#: includes/Admin/Settings.php:86
+msgid "Let staff fill an order’s billing or shipping address from the customer’s saved addresses on the admin order screen"
+msgstr "Permite que a equipe preencha o endereço de cobrança ou de entrega de um pedido com os endereços salvos do cliente na tela de pedidos do administrador"
+
+#: includes/Admin/Settings.php:92
 msgid "Additional address limit"
 msgstr "Limite de endereços adicionais"
 
-#: includes/Admin/Settings.php:86
+#: includes/Admin/Settings.php:93
 msgid "Maximum additional addresses per customer. Billing and shipping defaults are not counted. Use 0 for unlimited."
 msgstr "Número máximo de endereços adicionais por cliente. Os endereços padrão de cobrança e entrega não são contados. Use 0 para ilimitado."
 
-#: includes/Admin/Settings.php:97
+#: includes/Admin/Settings.php:104
 msgid "Address search threshold"
 msgstr "Limite para a busca de endereços"
 
-#: includes/Admin/Settings.php:98
+#: includes/Admin/Settings.php:105
 msgid "Show search in checkout and My Account when a customer has more than this many addresses. Use 0 to always show it."
 msgstr "Mostrar a busca na finalização e em Minha conta quando o cliente tiver mais endereços do que esta quantidade. Use 0 para sempre mostrar."
 
-#: includes/Admin/Settings.php:110
+#: includes/Admin/Settings.php:117
 msgid "Save checkout addresses"
 msgstr "Salvar endereços da finalização"
 
-#: includes/Admin/Settings.php:111
+#: includes/Admin/Settings.php:118
 msgid "Add a new address entered at checkout to the customer’s address book"
 msgstr "Adicionar ao catálogo do cliente cada novo endereço informado na finalização"
 
-#: includes/Admin/Settings.php:117
+#: includes/Admin/Settings.php:124
 msgid "New address defaults"
 msgstr "Padrões para novos endereços"
 
-#: includes/Admin/Settings.php:118
+#: includes/Admin/Settings.php:125
 msgid "Choose whether a new address entered at checkout should replace the matching billing or shipping profile default."
 msgstr "Escolha se um novo endereço informado na finalização deve substituir o endereço padrão de cobrança ou entrega do perfil."
 
-#: includes/Admin/Settings.php:123
+#: includes/Admin/Settings.php:130
 msgid "Keep the current defaults"
 msgstr "Manter os padrões atuais"
 
-#: includes/Admin/Settings.php:124
+#: includes/Admin/Settings.php:131
 msgid "Make the new address the matching default"
 msgstr "Tornar o novo endereço o padrão correspondente"
 
-#: includes/Admin/Settings.php:132
+#: includes/Admin/Settings.php:139
 msgid "Appearance"
 msgstr "Aparência"
 
-#: includes/Admin/Settings.php:133
+#: includes/Admin/Settings.php:140
 msgid "These values are exposed through scoped Unwan CSS variables and do not restyle the active theme."
 msgstr "Esses valores são expostos por variáveis CSS do Unwan com escopo próprio e não alteram o estilo do tema ativo."
 
-#: includes/Admin/Settings.php:138
+#: includes/Admin/Settings.php:145
 msgid "Color mode"
 msgstr "Modo de cor"
 
-#: includes/Admin/Settings.php:143
+#: includes/Admin/Settings.php:150
 msgid "Light"
 msgstr "Claro"
 
-#: includes/Admin/Settings.php:144
+#: includes/Admin/Settings.php:151
 msgid "Dark"
 msgstr "Escuro"
 
-#: includes/Admin/Settings.php:145
+#: includes/Admin/Settings.php:152
 msgid "Follow the customer’s device"
 msgstr "Seguir o dispositivo do cliente"
 
-#: includes/Admin/Settings.php:149
+#: includes/Admin/Settings.php:156
 msgid "Accent color"
 msgstr "Cor de destaque"
 
-#: includes/Admin/Settings.php:160
+#: includes/Admin/Settings.php:167
 msgid "Text and labels"
 msgstr "Textos e rótulos"
 
-#: includes/Admin/Settings.php:161
+#: includes/Admin/Settings.php:168
 msgid "Customize customer-facing interface copy. Leave a field empty to show the default text, translated into each customer’s language."
 msgstr "Personalize os textos exibidos aos clientes. Deixe um campo vazio para mostrar o texto padrão, traduzido para o idioma de cada cliente."
 
-#: includes/Admin/Settings.php:165
+#: includes/Admin/Settings.php:172
 msgid "Address-book page title"
 msgstr "Título da página do catálogo"
 
-#: includes/Admin/Settings.php:166
+#: includes/Admin/Settings.php:173
 msgid "Address-book description"
 msgstr "Descrição do catálogo"
 
-#: includes/Admin/Settings.php:167
+#: includes/Admin/Settings.php:174
 msgid "Add-address button"
 msgstr "Botão de adicionar endereço"
 
-#: includes/Admin/Settings.php:168
+#: includes/Admin/Settings.php:175
 msgid "Add-address heading"
 msgstr "Título de adicionar endereço"
 
-#: includes/Admin/Settings.php:169
+#: includes/Admin/Settings.php:176
 msgid "Edit-address heading"
 msgstr "Título de editar endereço"
 
-#: includes/Admin/Settings.php:170
+#: includes/Admin/Settings.php:177
 msgid "Back link"
 msgstr "Link de voltar"
 
-#: includes/Admin/Settings.php:171
+#: includes/Admin/Settings.php:178
 msgid "Save button"
 msgstr "Botão de salvar"
 
-#: includes/Admin/Settings.php:172
+#: includes/Admin/Settings.php:179
 msgid "Cancel action"
 msgstr "Ação de cancelar"
 
-#: includes/Admin/Settings.php:173
+#: includes/Admin/Settings.php:180
 msgid "Empty-state heading"
 msgstr "Título do estado vazio"
 
-#: includes/Admin/Settings.php:174
+#: includes/Admin/Settings.php:181
 msgid "Empty-state description"
 msgstr "Descrição do estado vazio"
 
-#: includes/Admin/Settings.php:175
+#: includes/Admin/Settings.php:182
 msgid "Billing summary heading"
 msgstr "Título do resumo de cobrança"
 
-#: includes/Admin/Settings.php:176
+#: includes/Admin/Settings.php:183
 msgid "Shipping summary heading"
 msgstr "Título do resumo de entrega"
 
-#: includes/Admin/Settings.php:177
+#: includes/Admin/Settings.php:184
 msgid "Billing picker heading"
 msgstr "Título do seletor de cobrança"
 
-#: includes/Admin/Settings.php:178
+#: includes/Admin/Settings.php:185
 msgid "Shipping picker heading"
 msgstr "Título do seletor de entrega"
 
-#: includes/Admin/Settings.php:179
+#: includes/Admin/Settings.php:186
 msgid "Search placeholder"
 msgstr "Texto de exemplo da busca"
 
-#: includes/Admin/Settings.php:180
+#: includes/Admin/Settings.php:187
 msgid "New-address choice"
 msgstr "Opção de novo endereço"
 
-#: includes/Admin/Settings.php:181
+#: includes/Admin/Settings.php:188
 msgid "Change action"
 msgstr "Ação de alterar"
 
-#: includes/Admin/Settings.php:187
+#: includes/Admin/Settings.php:194
 msgid "Data removal"
 msgstr "Remoção de dados"
 
-#: includes/Admin/Settings.php:188
+#: includes/Admin/Settings.php:195
 msgid "Choose whether customer address-book data and plugin settings should remain after uninstalling Unwan."
 msgstr "Escolha se os dados do catálogo de endereços dos clientes e as configurações do plugin devem permanecer após desinstalar o Unwan."
 
-#: includes/Admin/Settings.php:193
+#: includes/Admin/Settings.php:200
 msgid "Uninstall cleanup"
 msgstr "Limpeza na desinstalação"
 
-#: includes/Admin/Settings.php:194
+#: includes/Admin/Settings.php:201
 msgid "Permanently remove all Unwan settings and additional customer addresses when the plugin is deleted"
 msgstr "Remover permanentemente todas as configurações do Unwan e os endereços adicionais dos clientes quando o plugin for excluído"
 
-#: includes/Admin/Settings.php:195
+#: includes/Admin/Settings.php:202
 msgid "WooCommerce billing and shipping profile addresses are not removed."
 msgstr "Os endereços de cobrança e entrega do perfil do WooCommerce não são removidos."
 
-#: includes/Admin/Settings.php:334
+#: includes/Admin/Settings.php:341
 msgid "Addresses"
 msgstr "Endereços"
 
-#: includes/Admin/Settings.php:335
+#: includes/Admin/Settings.php:342
 msgid "Your billing default, shipping default, and additional addresses form one address book. Every address can be used anywhere at checkout."
 msgstr "Seu endereço padrão de cobrança, o de entrega e os endereços adicionais formam um único catálogo. Qualquer endereço pode ser usado em qualquer ponto da finalização."
 
-#: includes/Admin/Settings.php:336
+#: includes/Admin/Settings.php:343
 msgid "Add new address"
 msgstr "Adicionar endereço"
 
-#: includes/Admin/Settings.php:337
+#: includes/Admin/Settings.php:344
 msgid "Add a new address"
 msgstr "Adicionar um novo endereço"
 
-#: includes/Admin/Settings.php:338
+#: includes/Admin/Settings.php:345
 msgid "Edit address"
 msgstr "Editar endereço"
 
-#: includes/Admin/Settings.php:339
+#: includes/Admin/Settings.php:346
 msgid "Back to addresses"
 msgstr "Voltar para os endereços"
 
-#: includes/Admin/Settings.php:340
+#: includes/Admin/Settings.php:347
 msgid "Save address"
 msgstr "Salvar endereço"
 
-#: includes/Admin/Settings.php:341
+#: includes/Admin/Settings.php:348
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: includes/Admin/Settings.php:342
+#: includes/Admin/Settings.php:349
 msgid "You haven’t saved an address yet"
 msgstr "Você ainda não salvou nenhum endereço"
 
-#: includes/Admin/Settings.php:343
+#: includes/Admin/Settings.php:350
 msgid "Add one now and it will be available to both billing and shipping at checkout."
 msgstr "Adicione um agora e ele ficará disponível tanto para cobrança quanto para entrega na finalização."
 
-#: includes/Admin/Settings.php:344
+#: includes/Admin/Settings.php:351
 msgid "Billing to"
 msgstr "Cobrando de"
 
-#: includes/Admin/Settings.php:345
+#: includes/Admin/Settings.php:352
 msgid "Delivering to"
 msgstr "Entregando para"
 
-#: includes/Admin/Settings.php:346
+#: includes/Admin/Settings.php:353
 msgid "Bill to"
 msgstr "Cobrar de"
 
-#: includes/Admin/Settings.php:347
+#: includes/Admin/Settings.php:354
 msgid "Deliver to"
 msgstr "Entregar para"
 
-#: includes/Admin/Settings.php:348
+#: includes/Admin/Settings.php:355
 msgid "Filter by street, city or postcode"
 msgstr "Filtrar por rua, cidade ou CEP"
 
-#: includes/Admin/Settings.php:349
+#: includes/Admin/Settings.php:356
 msgid "Enter a new address"
 msgstr "Informar um novo endereço"
 
-#: includes/Admin/Settings.php:350 templates/myaccount/address-book.php:83
+#: includes/Admin/Settings.php:357 templates/myaccount/address-book.php:83
 msgid "Change"
 msgstr "Alterar"
 
 #. translators: %d: number of saved addresses.
 #. translators: %d: total number of unique addresses.
-#: includes/Admin/Settings.php:497 includes/Admin/Settings.php:499
+#: includes/Admin/Settings.php:521 includes/Admin/Settings.php:523
 #: templates/myaccount/address-book.php:95
 #, php-format
 msgid "%d saved address"
@@ -341,22 +357,22 @@ msgstr[0] "%d endereço salvo"
 msgstr[1] "%d endereços salvos"
 
 #. translators: %d: number of additional saved addresses not currently shown.
-#: includes/Admin/Settings.php:501 includes/Admin/Settings.php:503
+#: includes/Admin/Settings.php:525 includes/Admin/Settings.php:527
 #, php-format
 msgid "%d more saved address"
 msgid_plural "%d more saved addresses"
 msgstr[0] "%d endereço salvo a mais"
 msgstr[1] "%d endereços salvos a mais"
 
-#: includes/Admin/Settings.php:504
+#: includes/Admin/Settings.php:528
 msgid "Search saved addresses"
 msgstr "Buscar endereços salvos"
 
-#: includes/Admin/Settings.php:506
+#: includes/Admin/Settings.php:530
 msgid "No saved addresses match your search."
 msgstr "Nenhum endereço salvo corresponde à sua busca."
 
-#: includes/Admin/Settings.php:508
+#: includes/Admin/Settings.php:532
 msgid "Default"
 msgstr "Padrão"
 
@@ -372,7 +388,7 @@ msgstr "Entrada do catálogo selecionada para entrega."
 msgid "Please choose a valid saved address."
 msgstr "Escolha um endereço salvo válido."
 
-#: includes/Plugin.php:149
+#: includes/Plugin.php:151
 msgid "Settings"
 msgstr "Configurações"
 

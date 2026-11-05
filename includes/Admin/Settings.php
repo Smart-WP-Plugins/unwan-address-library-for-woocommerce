@@ -82,6 +82,13 @@ final class Settings {
 				'default' => 'yes',
 			),
 			array(
+				'title'   => __( 'Admin order dropdown', 'unwan-for-woocommerce' ),
+				'desc'    => __( 'Let staff fill an order’s billing or shipping address from the customer’s saved addresses on the admin order screen', 'unwan-for-woocommerce' ),
+				'id'      => 'unwan_admin_order_addresses',
+				'type'    => 'checkbox',
+				'default' => 'yes',
+			),
+			array(
 				'title'             => __( 'Additional address limit', 'unwan-for-woocommerce' ),
 				'desc_tip'          => __( 'Maximum additional addresses per customer. Billing and shipping defaults are not counted. Use 0 for unlimited.', 'unwan-for-woocommerce' ),
 				'id'                => 'unwan_address_save_limit',
@@ -368,6 +375,23 @@ final class Settings {
 		 * @param string $type    Billing or shipping.
 		 */
 		return (bool) apply_filters( 'unwan_address_type_enabled', $enabled, $type );
+	}
+
+	/**
+	 * Whether the saved-address dropdown appears on the admin order screen.
+	 *
+	 * @return bool
+	 */
+	public function is_admin_order_dropdown_enabled(): bool {
+		$enabled = 'yes' === get_option( 'unwan_admin_order_addresses', 'yes' );
+
+		/**
+		 * Filter whether the admin order screen offers the saved-address
+		 * dropdown.
+		 *
+		 * @param bool $enabled Whether the dropdown is enabled.
+		 */
+		return (bool) apply_filters( 'unwan_admin_order_addresses_enabled', $enabled );
 	}
 
 	/**

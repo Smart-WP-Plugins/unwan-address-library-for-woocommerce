@@ -7,6 +7,7 @@
 
 namespace Unwan\AddressLibrary;
 
+use Unwan\AddressLibrary\Admin\OrderAddresses;
 use Unwan\AddressLibrary\Admin\Settings;
 use Unwan\AddressLibrary\Checkout\BlocksController;
 use Unwan\AddressLibrary\Checkout\ClassicCheckout;
@@ -73,6 +74,7 @@ final class Plugin {
 		( new ClassicCheckout( $repository, $settings ) )->register();
 		( new BlocksController( $repository, $settings ) )->register();
 		( new Privacy( $repository ) )->register();
+		( new OrderAddresses( $repository, $settings ) )->register();
 
 		add_action( 'init', array( $this, 'load_textdomain' ) );
 		add_action( 'init', array( $this, 'maybe_upgrade' ), 99 );

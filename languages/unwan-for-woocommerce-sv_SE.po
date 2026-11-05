@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Unwan – Multiple Address Book for WooCommerce 1.0.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/unwan-for-woocommerce/\n"
-"POT-Creation-Date: 2026-10-04 05:43+0530\n"
+"POT-Creation-Date: 2026-11-05 18:24+0530\n"
 "PO-Revision-Date: 2026-08-14 00:34+0530\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -52,7 +52,7 @@ msgstr "Adressen har tagits bort."
 msgid "Default address updated."
 msgstr "Standardadressen har uppdaterats."
 
-#: includes/AddressRepository.php:350 includes/Admin/Settings.php:491
+#: includes/AddressRepository.php:350 includes/Admin/Settings.php:515
 msgid "Address"
 msgstr "Adress"
 
@@ -69,10 +69,18 @@ msgid "Change this address’s default roles before deleting it."
 msgstr "Ändra adressens standardroller innan du tar bort den."
 
 #. translators: 1: recipient name, 2: formatted postal address.
-#: includes/AddressRepository.php:927
+#: includes/AddressRepository.php:927 includes/Admin/OrderAddresses.php:161
 #, php-format
 msgid "%1$s (default) — %2$s"
 msgstr "%1$s (standard) — %2$s"
+
+#: includes/Admin/OrderAddresses.php:119
+msgid "Saved addresses"
+msgstr "Sparade adresser"
+
+#: includes/Admin/OrderAddresses.php:120
+msgid "Choose a saved address…"
+msgstr "Välj en sparad adress…"
 
 #: includes/Admin/Settings.php:45
 msgid "Unwan"
@@ -99,240 +107,248 @@ msgid "Let customers choose any address-book entry for shipping"
 msgstr "Låt kunder välja vilken adress som helst från adressboken för leverans"
 
 #: includes/Admin/Settings.php:85
+msgid "Admin order dropdown"
+msgstr "Rullgardinsmeny i adminbeställningar"
+
+#: includes/Admin/Settings.php:86
+msgid "Let staff fill an order’s billing or shipping address from the customer’s saved addresses on the admin order screen"
+msgstr "Låt personalen fylla i en beställnings faktura- eller leveransadress med kundens sparade adresser på beställningsskärmen i administrationen"
+
+#: includes/Admin/Settings.php:92
 msgid "Additional address limit"
 msgstr "Gräns för ytterligare adresser"
 
-#: includes/Admin/Settings.php:86
+#: includes/Admin/Settings.php:93
 msgid "Maximum additional addresses per customer. Billing and shipping defaults are not counted. Use 0 for unlimited."
 msgstr "Högsta antal ytterligare adresser per kund. Standardadresser för fakturering och leverans räknas inte. Använd 0 för obegränsat."
 
-#: includes/Admin/Settings.php:97
+#: includes/Admin/Settings.php:104
 msgid "Address search threshold"
 msgstr "Tröskel för adressökning"
 
-#: includes/Admin/Settings.php:98
+#: includes/Admin/Settings.php:105
 msgid "Show search in checkout and My Account when a customer has more than this many addresses. Use 0 to always show it."
 msgstr "Visa sökningen i kassan och under Mitt konto när en kund har fler adresser än så här många. Använd 0 för att alltid visa den."
 
-#: includes/Admin/Settings.php:110
+#: includes/Admin/Settings.php:117
 msgid "Save checkout addresses"
 msgstr "Spara adresser från kassan"
 
-#: includes/Admin/Settings.php:111
+#: includes/Admin/Settings.php:118
 msgid "Add a new address entered at checkout to the customer’s address book"
 msgstr "Lägg till varje ny adress som anges i kassan i kundens adressbok"
 
-#: includes/Admin/Settings.php:117
+#: includes/Admin/Settings.php:124
 msgid "New address defaults"
 msgstr "Standard för nya adresser"
 
-#: includes/Admin/Settings.php:118
+#: includes/Admin/Settings.php:125
 msgid "Choose whether a new address entered at checkout should replace the matching billing or shipping profile default."
 msgstr "Välj om en ny adress som anges i kassan ska ersätta motsvarande standardadress för fakturering eller leverans i profilen."
 
-#: includes/Admin/Settings.php:123
+#: includes/Admin/Settings.php:130
 msgid "Keep the current defaults"
 msgstr "Behåll nuvarande standardadresser"
 
-#: includes/Admin/Settings.php:124
+#: includes/Admin/Settings.php:131
 msgid "Make the new address the matching default"
 msgstr "Gör den nya adressen till motsvarande standardadress"
 
-#: includes/Admin/Settings.php:132
+#: includes/Admin/Settings.php:139
 msgid "Appearance"
 msgstr "Utseende"
 
-#: includes/Admin/Settings.php:133
+#: includes/Admin/Settings.php:140
 msgid "These values are exposed through scoped Unwan CSS variables and do not restyle the active theme."
 msgstr "Dessa värden exponeras via avgränsade CSS-variabler från Unwan och ändrar inte det aktiva temats stil."
 
-#: includes/Admin/Settings.php:138
+#: includes/Admin/Settings.php:145
 msgid "Color mode"
 msgstr "Färgläge"
 
-#: includes/Admin/Settings.php:143
+#: includes/Admin/Settings.php:150
 msgid "Light"
 msgstr "Ljust"
 
-#: includes/Admin/Settings.php:144
+#: includes/Admin/Settings.php:151
 msgid "Dark"
 msgstr "Mörkt"
 
-#: includes/Admin/Settings.php:145
+#: includes/Admin/Settings.php:152
 msgid "Follow the customer’s device"
 msgstr "Följ kundens enhet"
 
-#: includes/Admin/Settings.php:149
+#: includes/Admin/Settings.php:156
 msgid "Accent color"
 msgstr "Accentfärg"
 
-#: includes/Admin/Settings.php:160
+#: includes/Admin/Settings.php:167
 msgid "Text and labels"
 msgstr "Texter och etiketter"
 
-#: includes/Admin/Settings.php:161
+#: includes/Admin/Settings.php:168
 msgid "Customize customer-facing interface copy. Leave a field empty to show the default text, translated into each customer’s language."
 msgstr "Anpassa texterna som kunderna ser. Lämna ett fält tomt för att visa standardtexten, översatt till varje kunds språk."
 
-#: includes/Admin/Settings.php:165
+#: includes/Admin/Settings.php:172
 msgid "Address-book page title"
 msgstr "Sidtitel för adressboken"
 
-#: includes/Admin/Settings.php:166
+#: includes/Admin/Settings.php:173
 msgid "Address-book description"
 msgstr "Beskrivning av adressboken"
 
-#: includes/Admin/Settings.php:167
+#: includes/Admin/Settings.php:174
 msgid "Add-address button"
 msgstr "Knapp för att lägga till adress"
 
-#: includes/Admin/Settings.php:168
+#: includes/Admin/Settings.php:175
 msgid "Add-address heading"
 msgstr "Rubrik för att lägga till adress"
 
-#: includes/Admin/Settings.php:169
+#: includes/Admin/Settings.php:176
 msgid "Edit-address heading"
 msgstr "Rubrik för att redigera adress"
 
-#: includes/Admin/Settings.php:170
+#: includes/Admin/Settings.php:177
 msgid "Back link"
 msgstr "Tillbakalänk"
 
-#: includes/Admin/Settings.php:171
+#: includes/Admin/Settings.php:178
 msgid "Save button"
 msgstr "Sparaknapp"
 
-#: includes/Admin/Settings.php:172
+#: includes/Admin/Settings.php:179
 msgid "Cancel action"
 msgstr "Avbrytsåtgärd"
 
-#: includes/Admin/Settings.php:173
+#: includes/Admin/Settings.php:180
 msgid "Empty-state heading"
 msgstr "Rubrik för tomt läge"
 
-#: includes/Admin/Settings.php:174
+#: includes/Admin/Settings.php:181
 msgid "Empty-state description"
 msgstr "Beskrivning för tomt läge"
 
-#: includes/Admin/Settings.php:175
+#: includes/Admin/Settings.php:182
 msgid "Billing summary heading"
 msgstr "Rubrik för faktureringssammanfattning"
 
-#: includes/Admin/Settings.php:176
+#: includes/Admin/Settings.php:183
 msgid "Shipping summary heading"
 msgstr "Rubrik för leveranssammanfattning"
 
-#: includes/Admin/Settings.php:177
+#: includes/Admin/Settings.php:184
 msgid "Billing picker heading"
 msgstr "Rubrik för faktureringsväljaren"
 
-#: includes/Admin/Settings.php:178
+#: includes/Admin/Settings.php:185
 msgid "Shipping picker heading"
 msgstr "Rubrik för leveransväljaren"
 
-#: includes/Admin/Settings.php:179
+#: includes/Admin/Settings.php:186
 msgid "Search placeholder"
 msgstr "Platshållare för sökningen"
 
-#: includes/Admin/Settings.php:180
+#: includes/Admin/Settings.php:187
 msgid "New-address choice"
 msgstr "Val av ny adress"
 
-#: includes/Admin/Settings.php:181
+#: includes/Admin/Settings.php:188
 msgid "Change action"
 msgstr "Ändringsåtgärd"
 
-#: includes/Admin/Settings.php:187
+#: includes/Admin/Settings.php:194
 msgid "Data removal"
 msgstr "Borttagning av data"
 
-#: includes/Admin/Settings.php:188
+#: includes/Admin/Settings.php:195
 msgid "Choose whether customer address-book data and plugin settings should remain after uninstalling Unwan."
 msgstr "Välj om kundernas adressboksdata och tilläggets inställningar ska finnas kvar efter att Unwan avinstallerats."
 
-#: includes/Admin/Settings.php:193
+#: includes/Admin/Settings.php:200
 msgid "Uninstall cleanup"
 msgstr "Rensning vid avinstallation"
 
-#: includes/Admin/Settings.php:194
+#: includes/Admin/Settings.php:201
 msgid "Permanently remove all Unwan settings and additional customer addresses when the plugin is deleted"
 msgstr "Ta bort alla Unwan-inställningar och kundernas ytterligare adresser permanent när tillägget raderas"
 
-#: includes/Admin/Settings.php:195
+#: includes/Admin/Settings.php:202
 msgid "WooCommerce billing and shipping profile addresses are not removed."
 msgstr "Faktura- och leveransadresser i WooCommerce-profilen tas inte bort."
 
-#: includes/Admin/Settings.php:334
+#: includes/Admin/Settings.php:341
 msgid "Addresses"
 msgstr "Adresser"
 
-#: includes/Admin/Settings.php:335
+#: includes/Admin/Settings.php:342
 msgid "Your billing default, shipping default, and additional addresses form one address book. Every address can be used anywhere at checkout."
 msgstr "Din standardadress för fakturering, din standardadress för leverans och dina ytterligare adresser bildar en enda adressbok. Varje adress kan användas var som helst i kassan."
 
-#: includes/Admin/Settings.php:336
+#: includes/Admin/Settings.php:343
 msgid "Add new address"
 msgstr "Lägg till adress"
 
-#: includes/Admin/Settings.php:337
+#: includes/Admin/Settings.php:344
 msgid "Add a new address"
 msgstr "Lägg till en ny adress"
 
-#: includes/Admin/Settings.php:338
+#: includes/Admin/Settings.php:345
 msgid "Edit address"
 msgstr "Redigera adress"
 
-#: includes/Admin/Settings.php:339
+#: includes/Admin/Settings.php:346
 msgid "Back to addresses"
 msgstr "Tillbaka till adresser"
 
-#: includes/Admin/Settings.php:340
+#: includes/Admin/Settings.php:347
 msgid "Save address"
 msgstr "Spara adress"
 
-#: includes/Admin/Settings.php:341
+#: includes/Admin/Settings.php:348
 msgid "Cancel"
 msgstr "Avbryt"
 
-#: includes/Admin/Settings.php:342
+#: includes/Admin/Settings.php:349
 msgid "You haven’t saved an address yet"
 msgstr "Du har inte sparat någon adress än"
 
-#: includes/Admin/Settings.php:343
+#: includes/Admin/Settings.php:350
 msgid "Add one now and it will be available to both billing and shipping at checkout."
 msgstr "Lägg till en nu så blir den tillgänglig för både fakturering och leverans i kassan."
 
-#: includes/Admin/Settings.php:344
+#: includes/Admin/Settings.php:351
 msgid "Billing to"
 msgstr "Faktureras till"
 
-#: includes/Admin/Settings.php:345
+#: includes/Admin/Settings.php:352
 msgid "Delivering to"
 msgstr "Levereras till"
 
-#: includes/Admin/Settings.php:346
+#: includes/Admin/Settings.php:353
 msgid "Bill to"
 msgstr "Fakturera till"
 
-#: includes/Admin/Settings.php:347
+#: includes/Admin/Settings.php:354
 msgid "Deliver to"
 msgstr "Leverera till"
 
-#: includes/Admin/Settings.php:348
+#: includes/Admin/Settings.php:355
 msgid "Filter by street, city or postcode"
 msgstr "Filtrera på gata, ort eller postnummer"
 
-#: includes/Admin/Settings.php:349
+#: includes/Admin/Settings.php:356
 msgid "Enter a new address"
 msgstr "Ange en ny adress"
 
-#: includes/Admin/Settings.php:350 templates/myaccount/address-book.php:83
+#: includes/Admin/Settings.php:357 templates/myaccount/address-book.php:83
 msgid "Change"
 msgstr "Ändra"
 
 #. translators: %d: number of saved addresses.
 #. translators: %d: total number of unique addresses.
-#: includes/Admin/Settings.php:497 includes/Admin/Settings.php:499
+#: includes/Admin/Settings.php:521 includes/Admin/Settings.php:523
 #: templates/myaccount/address-book.php:95
 #, php-format
 msgid "%d saved address"
@@ -341,22 +357,22 @@ msgstr[0] "%d sparad adress"
 msgstr[1] "%d sparade adresser"
 
 #. translators: %d: number of additional saved addresses not currently shown.
-#: includes/Admin/Settings.php:501 includes/Admin/Settings.php:503
+#: includes/Admin/Settings.php:525 includes/Admin/Settings.php:527
 #, php-format
 msgid "%d more saved address"
 msgid_plural "%d more saved addresses"
 msgstr[0] "%d sparad adress till"
 msgstr[1] "%d sparade adresser till"
 
-#: includes/Admin/Settings.php:504
+#: includes/Admin/Settings.php:528
 msgid "Search saved addresses"
 msgstr "Sök bland sparade adresser"
 
-#: includes/Admin/Settings.php:506
+#: includes/Admin/Settings.php:530
 msgid "No saved addresses match your search."
 msgstr "Ingen sparad adress matchar din sökning."
 
-#: includes/Admin/Settings.php:508
+#: includes/Admin/Settings.php:532
 msgid "Default"
 msgstr "Standard"
 
@@ -372,7 +388,7 @@ msgstr "Vald post i adressboken för leverans."
 msgid "Please choose a valid saved address."
 msgstr "Välj en giltig sparad adress."
 
-#: includes/Plugin.php:149
+#: includes/Plugin.php:151
 msgid "Settings"
 msgstr "Inställningar"
 

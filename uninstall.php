@@ -17,6 +17,7 @@ function unwan_uninstall_option_names(): array {
 		'unwan_plugin_version',
 		'unwan_billing_enable',
 		'unwan_shipping_enable',
+		'unwan_admin_order_addresses',
 		'unwan_address_save_limit',
 		'unwan_address_search_threshold',
 		'unwan_save_checkout_addresses',

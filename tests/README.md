@@ -87,6 +87,7 @@ against, so a green run is evidence for the `Tested up to` headers in
 | `UninstallTest` | Opt-in gating and the settings/uninstall option inventory |
 | `AccountRenderingTest` | My Account markup, escaping, ownership, search visibility |
 | `ClassicCheckoutTest` | Validation, default preservation, checkout address capture |
+| `AdminOrderAddressesTest` | Admin order dropdown data, staff-only loading, and that saving an admin order changes no customer address |
 | `BlocksTest` | Block registration, Store API schema, guest data isolation |
 | `CompatibilityTest` | Runtime versions and release-header consistency |
 

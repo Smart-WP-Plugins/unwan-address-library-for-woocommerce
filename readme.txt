@@ -1,14 +1,14 @@
 === Unwan – Multiple Address Book for WooCommerce ===
 Contributors: smartwpplugins, jeetsaha86
 Tags: woocommerce, address book, multiple addresses, checkout, checkout block
-Requires at least: 6.5
+Requires at least: 6.6
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.8
+Stable tag: 1.1.0
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Requires Plugins: woocommerce
-WC requires at least: 8.2
+WC requires at least: 9.7
 WC tested up to: 11.0.1
 
 One easy address book for WooCommerce. Customers save an address once and use it everywhere — at checkout and in their account.
@@ -39,6 +39,10 @@ Unwan works naturally with WooCommerce's newer block-based checkout — not as a
 * Easy edit, delete, and "make default" options in My Account.
 * Clean, simple design — no clunky dropdowns or layout jumps.
 
+= Saved addresses for your team, too =
+
+Taking an order over the phone or creating one by hand? On the admin order screen, pick the customer and a "Saved addresses" dropdown appears above the billing and shipping fields. Choose one and the order's address fills in, ready to edit. Nothing staff enter is added to the customer's address book, and their default addresses never change.
+
 = Matches your brand =
 
 Choose light, dark, or "match the customer's device," plus your own accent color. Every button and highlight throughout the picker and My Account updates to match — no design skills needed.
@@ -52,6 +56,7 @@ This was a priority from day one. Unwan has a negligible impact on site speed an
 From **WooCommerce > Settings > Accounts & Privacy > Unwan**, you can control:
 
 * Whether the address picker appears for billing, shipping, or both.
+* Whether staff get the saved-address dropdown on the admin order screen.
 * How many addresses a customer can save.
 * When the search box appears.
 * Whether checkout addresses save automatically, and whether they become the new default.
@@ -73,7 +78,7 @@ Unwan is developed and maintained by [SmartWP Plugins](https://smartwpplugins.co
 
 == Installation ==
 
-**You'll need:** WordPress 6.5+, PHP 7.4+, and WooCommerce 8.2+ already installed and active.
+**You'll need:** WordPress 6.6+, PHP 7.4+, and WooCommerce 9.7+ already installed and active.
 
 = From your WordPress dashboard =
 
@@ -142,11 +147,21 @@ Unwan keeps one shared address book, where any address can be used for billing, 
 
 At checkout, those fields appear as usual, handled by WooCommerce and your field editor. Unwan never hides or changes them. The same goes for any other checkout field, such as email, order notes, or additional information fields.
 
+= Can staff use saved addresses when creating orders? =
+
+Yes. On the admin order screen, choose a customer and a "Saved addresses" dropdown appears above the billing and shipping fields. Picking an address fills that part of the order, and staff can still edit it. Nothing is added to the customer's address book and their default addresses don't change.
+
 = What happens to my data if I delete the plugin? =
 
 It's kept by default. If you'd rather everything be removed, there's a setting for that under **WooCommerce > Settings > Accounts & Privacy > Unwan**. Either way, your customers' regular WooCommerce billing and shipping details are never touched.
 
 == Changelog ==
+
+= 1.1.0 =
+
+* New: staff can fill an order's billing or shipping address from the customer's saved addresses. A "Saved addresses" dropdown appears on the admin order screen as soon as a customer is chosen, on new and existing orders, and updates when the customer changes. Choosing an address only fills the order: nothing is added to the address book and the customer's default addresses don't change. Addresses in countries the store doesn't sell or ship to are left out, and the dropdown can be turned off in the settings.
+* Unwan now requires WooCommerce 9.7 or later, and WordPress 6.6 or later (which WooCommerce 9.7 needs). Block checkout relies on features older WooCommerce versions don't have, and failed there with the message "extensions > unwan is not of type object".
+* Fixed an address chosen at block checkout being picked again on the next checkout in the same browser tab, after an order placed with "Use same address for billing".
 
 = 1.0.8 =
 
@@ -228,6 +243,10 @@ It's kept by default. If you'd rather everything be removed, there's a setting f
 * General performance improvements.
 
 == Upgrade Notice ==
+
+= 1.1.0 =
+
+Staff can now fill an order's address from the customer's saved addresses when creating or editing orders in the admin. Requires WooCommerce 9.7+ and WordPress 6.6+.
 
 = 1.0.8 =
 
